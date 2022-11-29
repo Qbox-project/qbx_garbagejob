@@ -121,7 +121,7 @@ RegisterNetEvent('garbagejob:server:PayShift', function(continue)
     local Player = QBCore.Functions.GetPlayer(src)
     local CitizenId = Player.PlayerData.citizenid
 
-    if Routes[CitizenId] ~= nil then
+    if Routes[CitizenId] then
         local depositPay = Routes[CitizenId].depositPay
 
         if tonumber(Routes[CitizenId].stopsCompleted) < tonumber(Routes[CitizenId].totalNumberOfStops) then

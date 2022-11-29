@@ -652,6 +652,7 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
 
     MainMenu[#MainMenu + 1] = {
         title = Lang:t("menu.collect"),
+        icon = "fa-solid fa-receipt",
         description = Lang:t("menu.return_collect"),
         event = 'qb-garbagejob:client:RequestPaycheck'
     }
@@ -659,6 +660,7 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
     if not garbageVehicle or finished then
         MainMenu[#MainMenu + 1] = {
             title = Lang:t("menu.route"),
+            icon = "fa-solid fa-route",
             description = Lang:t("menu.request_route"),
             event = 'qb-garbagejob:client:RequestRoute'
         }
