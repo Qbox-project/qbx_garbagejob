@@ -1,5 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local playerJob = nil
+local PlayerJob = nil
 local garbageVehicle = nil
 local hasBag = false
 local currentStop = 0
@@ -28,7 +28,7 @@ local function setupClient()
     endBlip = nil
     currentStopNum = 0
 
-    if playerJob.name == "garbage" then
+    if PlayerJob.name == "garbage" then
         garbageBlip = AddBlipForCoord(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)
 
         SetBlipSprite(garbageBlip, 318)
@@ -401,12 +401,10 @@ end
 
 local function CreateZone(x, y, z)
     CreateThread(function()
-        PZone = CircleZone:Create(vec3(x, y, z), 15.0, {
-            name = "NewRouteWhoDis"
-        })
-
-        PZone:onPlayerInOut(function(isPointInside)
-            if isPointInside then
+        PZone = lib.zones.sphere({
+            coords = vec3(x, y, z),
+            radius = 15.0,
+            onEnter = function(_)
                 if not Config.UseTarget then
                     listen = true
 
@@ -414,7 +412,8 @@ local function CreateZone(x, y, z)
                 end
 
                 SetVehicleDoorOpen(garbageVehicle, 5, false, false)
-            else
+            end,
+            onExit = function(_)
                 if not Config.UseTarget then
                     lib.hideTextUI()
 
@@ -423,7 +422,7 @@ local function CreateZone(x, y, z)
 
                 SetVehicleDoorShut(garbageVehicle, 5, false)
             end
-        end)
+        })
     end)
 end
 
@@ -577,7 +576,7 @@ RegisterNetEvent('qb-garbagejob:client:RequestRoute', function()
             if not garbageVehicle then
                 local occupied = false
 
-                for _,v in pairs(Config.Locations["vehicle"].coords) do
+                for _, v in pairs(Config.Locations["vehicle"].coords) do
                     if not IsAnyVehicleNearPoint(vec3(v.x, v.y, v.z), 2.5) then
                         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
                             local veh = NetToVeh(netId)
@@ -643,13 +642,13 @@ RegisterNetEvent('qb-garbagejob:client:RequestPaycheck', function()
 end)
 
 RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
-    local MainMenu = {}
-
-    MainMenu[#MainMenu + 1] = {
-        title = Lang:t("menu.collect"),
-        icon = "fa-solid fa-receipt",
-        description = Lang:t("menu.return_collect"),
-        event = 'qb-garbagejob:client:RequestPaycheck'
+    local MainMenu = {
+        {
+            title = Lang:t("menu.collect"),
+            icon = "fa-solid fa-receipt",
+            description = Lang:t("menu.return_collect"),
+            event = 'qb-garbagejob:client:RequestPaycheck'
+        }
     }
 
     if not garbageVehicle or finished then
@@ -670,14 +669,14 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    playerJob = QBCore.Functions.GetPlayerData().job
+    PlayerJob = QBCore.Functions.GetPlayerData().job
 
     setupClient()
     spawnPeds()
 end)
 
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-    playerJob = JobInfo
+    PlayerJob = JobInfo
 
     if garbageBlip then
         RemoveBlip(garbageBlip)
@@ -688,22 +687,26 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
 end)
 
 AddEventHandler('onResourceStop', function(resource)
-    if GetCurrentResourceName() == resource then
-        if garbageObject then
-            DeleteEntity(garbageObject)
-
-            garbageObject = nil
-        end
-
-        deletePeds()
+    if GetCurrentResourceName() ~= resource then
+        return
     end
+
+    if garbageObject then
+        DeleteEntity(garbageObject)
+
+        garbageObject = nil
+    end
+
+    deletePeds()
 end)
 
 AddEventHandler('onResourceStart', function(resource)
-    if GetCurrentResourceName() == resource then
-        playerJob = QBCore.Functions.GetPlayerData().job
-
-        setupClient()
-        spawnPeds()
+    if GetCurrentResourceName() ~= resource then
+        return
     end
+
+    PlayerJob = QBCore.Functions.GetPlayerData().job
+
+    setupClient()
+    spawnPeds()
 end)
