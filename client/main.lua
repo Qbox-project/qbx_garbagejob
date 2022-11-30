@@ -525,29 +525,24 @@ local function spawnPeds()
                 distance = 2.0
             })
         else
-            local options = current.zoneOptions
+            lib.zones.box({
+                coords = current.coords.xyz,
+                size = vec3(3, 3, 3),
+                rotation = current.coords.w,
+                onEnter = function(_)
+                    lib.showTextUI(Lang:t("info.talk"))
 
-            if options then
-                local zone = BoxZone:Create(current.coords.xyz, options.length, options.width, {
-                    name = "zone_cityhall_" .. ped,
-                    heading = current.coords.w
-                })
-                zone:onPlayerInOut(function(inside)
-                    if LocalPlayer.state.isLoggedIn then
-                        if inside then
-                            lib.showTextUI(Lang:t("info.talk"))
+                    Listen4Control()
+                end,
+                onExit = function(_)
+                    ControlListen = false
 
-                            Listen4Control()
-                        else
-                            ControlListen = false
-
-                            lib.hideTextUI()
-                        end
-                    end
-                end)
-            end
+                    lib.hideTextUI()
+                end
+            })
         end
     end
+
     pedsSpawned = true
 end
 
