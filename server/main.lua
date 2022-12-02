@@ -16,11 +16,11 @@ QBCore.Functions.CreateCallback("garbagejob:server:NewShift", function(source, c
     if CanPay(Player) or continue then
         math.randomseed(os.time())
 
-        local MaxStops = math.random(Config.MinStops, #Config.Locations["trashcan"])
+        local MaxStops = math.random(Config.MinStops, #Config.Locations.trashcan)
         local allStops = {}
 
         for _ = 1, MaxStops do
-            local stop = math.random(#Config.Locations["trashcan"])
+            local stop = math.random(#Config.Locations.trashcan)
             local newBagAmount = math.random(Config.MinBagsPerStop, Config.MaxBagsPerStop)
 
             allStops[#allStops + 1] = {stop = stop, bags = newBagAmount}
@@ -63,7 +63,7 @@ end)
 QBCore.Functions.CreateCallback("garbagejob:server:NextStop", function(source, cb, currentStop, currentStopNum, currLocation)
     local Player = QBCore.Functions.GetPlayer(source)
     local CitizenId = Player.PlayerData.citizenid
-    local currStopCoords = Config.Locations["trashcan"][currentStop].coords
+    local currStopCoords = Config.Locations.trashcan[currentStop].coords
 
     currStopCoords = vec3(currStopCoords.x, currStopCoords.y, currStopCoords.z)
 

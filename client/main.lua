@@ -204,16 +204,22 @@ local function DeliverAnim()
 end
 
 function TakeAnim()
-    QBCore.Functions.Progressbar("bag_pickup", Lang:t("info.picking_bag"), math.random(3000, 5000), false, true, {
-        disableMovement = true,
-        disableCarMovement = true,
-        disableMouse = false,
-        disableCombat = true
-    }, {
-        animDict = "anim@amb@clubhouse@tutorial@bkr_tut_ig3@",
-        anim = "machinic_loop_mechandplayer",
-        flags = 16
-    }, {}, {}, function()
+    if lib.progressBar({
+        duration = math.random(3000, 5000),
+        label = Lang:t("info.picking_bag"),
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            combat = true
+        },
+        anim = {
+            dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
+            clip = 'machinic_loop_mechandplayer',
+            flag = 16
+        }
+    }) then
         lib.requestAnimDict('missfbi4prepp1')
 
         TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, 0, 0, 0)
@@ -250,11 +256,11 @@ function TakeAnim()
                 distance = 2.0
             })
         end
-    end, function()
+    else
         StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
 
         QBCore.Functions.Notify(Lang:t("error.cancled"), "error")
-    end)
+    end
 end
 
 local function RunWorkLoop()
@@ -307,83 +313,92 @@ local function RunWorkLoop()
 
                                 DeliverAnim()
 
-                                QBCore.Functions.Progressbar("deliverbag", Lang:t("info.progressbar"), 2000, false, true, {
-                                        disableMovement = true,
-                                        disableCarMovement = true,
-                                        disableMouse = false,
-                                        disableCombat = true
-                                    }, {}, {}, {}, function() -- Done
-                                        hasBag = false
-                                        canTakeBag = false
+                                if lib.progressBar({
+                                    duration = 2000,
+                                    label = Lang:t("info.progressbar"),
+                                    useWhileDead = false,
+                                    canCancel = true,
+                                    disable = {
+                                        move = true,
+                                        car = true,
+                                        combat = true
+                                    },
+                                    anim = {
+                                        dict = 'mp_car_bomb',
+                                        clip = 'car_bomb_mechanic',
+                                        flag = 16
+                                    }
+                                }) then
+                                    hasBag = false
+                                    canTakeBag = false
 
-                                        DetachEntity(garbageObject, 1, false)
-                                        DeleteObject(garbageObject)
-                                        FreezeEntityPosition(cache.ped, false)
+                                    DetachEntity(garbageObject, 1, false)
+                                    DeleteObject(garbageObject)
+                                    FreezeEntityPosition(cache.ped, false)
 
-                                        garbageObject = nil
-                                        canTakeBag = true
+                                    garbageObject = nil
+                                    canTakeBag = true
 
-                                        -- Looks if you have delivered all bags
-                                        if amountOfBags - 1 <= 0 then
-                                            QBCore.Functions.TriggerCallback('garbagejob:server:NextStop', function(hasMoreStops, nextStop, newBagAmount)
-                                                if hasMoreStops and nextStop ~= 0 then
-                                                    -- Here he puts your next location and you are not finished working yet.
-                                                    currentStop = nextStop
-                                                    currentStopNum = currentStopNum + 1
-                                                    amountOfBags = newBagAmount
+                                    -- Looks if you have delivered all bags
+                                    if amountOfBags - 1 <= 0 then
+                                        QBCore.Functions.TriggerCallback('garbagejob:server:NextStop', function(hasMoreStops, nextStop, newBagAmount)
+                                            if hasMoreStops and nextStop ~= 0 then
+                                                -- Here he puts your next location and you are not finished working yet.
+                                                currentStop = nextStop
+                                                currentStopNum = currentStopNum + 1
+                                                amountOfBags = newBagAmount
 
-                                                    SetGarbageRoute()
+                                                SetGarbageRoute()
 
-                                                    QBCore.Functions.Notify(Lang:t("info.all_bags"))
+                                                QBCore.Functions.Notify(Lang:t("info.all_bags"))
 
-                                                    listen = false
+                                                listen = false
+
+                                                SetVehicleDoorShut(garbageVehicle, 5, false)
+                                            else
+                                                if hasMoreStops and nextStop == currentStop then
+                                                    QBCore.Functions.Notify(Lang:t("info.depot_issue"))
+
+                                                    amountOfBags = 0
+                                                else
+                                                    -- You are done with work here.
+                                                    QBCore.Functions.Notify(Lang:t("info.done_working"))
 
                                                     SetVehicleDoorShut(garbageVehicle, 5, false)
-                                                else
-                                                    if hasMoreStops and nextStop == currentStop then
-                                                        QBCore.Functions.Notify(Lang:t("info.depot_issue"))
+                                                    RemoveBlip(deliveryBlip)
 
-                                                        amountOfBags = 0
-                                                    else
-                                                        -- You are done with work here.
-                                                        QBCore.Functions.Notify(Lang:t("info.done_working"))
+                                                    SetRouteBack()
 
-                                                        SetVehicleDoorShut(garbageVehicle, 5, false)
-                                                        RemoveBlip(deliveryBlip)
-
-                                                        SetRouteBack()
-
-                                                        amountOfBags = 0
-                                                        listen = false
-                                                    end
+                                                    amountOfBags = 0
+                                                    listen = false
                                                 end
-                                            end, currentStop, currentStopNum, pos)
-                                            hasBag = false
-                                        else
-                                            -- You haven't delivered all bags here
-                                            amountOfBags = amountOfBags - 1
-
-                                            if amountOfBags > 1 then
-                                                QBCore.Functions.Notify(Lang:t("info.bags_left", { value = amountOfBags }))
-                                            else
-                                                QBCore.Functions.Notify(Lang:t("info.bags_still", { value = amountOfBags }))
                                             end
+                                        end, currentStop, currentStopNum, pos)
 
-                                            hasBag = false
+                                        hasBag = false
+                                    else
+                                        -- You haven't delivered all bags here
+                                        amountOfBags = amountOfBags - 1
+
+                                        if amountOfBags > 1 then
+                                            QBCore.Functions.Notify(Lang:t("info.bags_left", { value = amountOfBags }))
+                                        else
+                                            QBCore.Functions.Notify(Lang:t("info.bags_still", { value = amountOfBags }))
                                         end
 
-                                        Wait(1500)
+                                        hasBag = false
+                                    end
 
-                                        if TrucText then
-                                            lib.hideTextUI()
+                                    Wait(1500)
 
-                                            TrucText = false
-                                        end
-                                    end, function() -- Cancel
+                                    if TrucText then
+                                        lib.hideTextUI()
 
+                                        TrucText = false
+                                    end
+                                else
                                     QBCore.Functions.Notify(Lang:t("error.cancled"), "error")
-                                end)
-
+                                end
                             end
                         end
                     else
