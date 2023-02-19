@@ -6,10 +6,23 @@ local Translations = {
         ["too_far"] = "Vous êtes trop loin du point de dépôt",
         ["early_finish"] = "En raison de votre performance (Complété: %{completed} sur Total: %{total}), votre caution ne sera pas restituée.",
         ["never_clocked_on"] = "Tu n'as pas assez travaillé pour être payé!",
+        ["all_occupied"] = "Toutes les places de parking sont occupées",
     },
     success = {
         ["clear_routes"] = "Optimisations des itinéraires, il y'avait %{value} itinéraires enregistrés",
         ["pay_slip"] = "Vous avez eu $%{total}, votre salaire de %{deposit} a été transféré à votre compte bancaire!",
+    },
+    target = {
+        ["talk"] = 'Parler avec l\'éboueur',
+        ["grab_garbage"] = "Ramasser le sac poubelle",
+        ["dispose_garbage"] = "Poser le sac poubelle",
+    },
+    menu = {
+        ["header"] = "Eboueur - Menu principal",
+        ["collect"] = "Demander la paie",
+        ["return_collect"] = "Rendez votre camion et récuperez votre dû !",
+        ["route"] = "Demander une tournée",
+        ["request_route"] = "Demandex le début de votre tournée",
     },
     info = {
         ["payslip_collect"] = "[E] - Recevoir sa fiche de paie",
@@ -34,8 +47,9 @@ local Translations = {
         ["payout_deposit"] = "(+ $%{value} deposit)",
         ["store_truck"] =  "[E] - Garer le Camion Benne",
         ["get_truck"] =  "[E] - Sortir un Camion Benne",
+        ["picking_bag"] = "Ramassage du sac poubelle...",
+        ["talk"] = "[E] Parler avec l'éboueur",
     },
-    warning = {},
 }
 
 if GetConvar('qb_locale', 'en') == 'fr' then
