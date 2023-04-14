@@ -497,12 +497,29 @@ end)
 
 RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
     local MainMenu = {}
-    MainMenu[#MainMenu+1] = {isMenuHeader = true,header = Lang:t("menu.header")}
-    MainMenu[#MainMenu+1] = { header = Lang:t("menu.collect"),txt = Lang:t("menu.return_collect"),params = { event = 'qb-garbagejob:client:RequestPaycheck',}}
+
     if not garbageVehicle or finished then
-        MainMenu[#MainMenu+1] = { header = Lang:t("menu.route"), txt = Lang:t("menu.request_route"), params = { event = 'qb-garbagejob:client:RequestRoute',}}
+        MainMenu[#MainMenu + 1] = { 
+            title = Lang:t("menu.route"), 
+            description = Lang:t("menu.request_route"), 
+            event = 'qb-garbagejob:client:RequestRoute'
+        }
+    else
+        MainMenu[#MainMenu + 1] = {
+            title = Lang:t("menu.collect"),
+            description = Lang:t("menu.return_collect"),
+            event = 'qb-garbagejob:client:RequestPaycheck'
+    
+        }
     end
-    exports['qb-menu']:openMenu(MainMenu)
+
+    lib.registerContext({
+        id = 'qb_gargabejob_mainMenu',
+        title = Lang:t("menu.header"),
+        options = MainMenu
+    })
+
+    lib.showContext('qb_gargabejob_mainMenu')
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
