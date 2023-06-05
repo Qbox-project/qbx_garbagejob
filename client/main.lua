@@ -27,14 +27,14 @@ local function setupClient()
     endBlip = nil
     currentStopNum = 0
     if playerJob.name == "garbage" then
-        garbageBlip = AddBlipForCoord(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y, Config.Locations["main"].coords.z)
+        garbageBlip = AddBlipForCoord(Config.Locations.main.coords.x, Config.Locations.main.coords.y, Config.Locations.main.coords.z)
         SetBlipSprite(garbageBlip, 318)
         SetBlipDisplay(garbageBlip, 4)
         SetBlipScale(garbageBlip, 1.0)
         SetBlipAsShortRange(garbageBlip, true)
         SetBlipColour(garbageBlip, 39)
         BeginTextCommandSetBlipName("STRING")
-        AddTextComponentSubstringPlayerName(Config.Locations["main"].label)
+        AddTextComponentSubstringPlayerName(Config.Locations.main.label)
         EndTextCommandSetBlipName(garbageBlip)
     end
 end
@@ -70,7 +70,7 @@ local function DeleteZone()
 end
 
 local function SetRouteBack()
-    local depot = Config.Locations["main"].coords
+    local depot = Config.Locations.main.coords
     endBlip = AddBlipForCoord(depot.x, depot.y, depot.z)
     SetBlipSprite(endBlip, 1)
     SetBlipDisplay(endBlip, 2)
@@ -78,7 +78,7 @@ local function SetRouteBack()
     SetBlipAsShortRange(endBlip, false)
     SetBlipColour(endBlip, 3)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentSubstringPlayerName(Config.Locations["vehicle"].label)
+    AddTextComponentSubstringPlayerName(Config.Locations.vehicle.label)
     EndTextCommandSetBlipName(endBlip)
     SetBlipRoute(endBlip, true)
     DeleteZone()
@@ -92,7 +92,7 @@ local function AnimCheck()
             if not IsEntityPlayingAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 3) then
                 ClearPedTasksImmediately(ped)
                 LoadAnimation('missfbi4prepp1')
-                TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, 0, 0, 0)
+                TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
             end
             Wait(1000)
         end
@@ -102,47 +102,46 @@ end
 local function DeliverAnim()
     local ped = PlayerPedId()
     LoadAnimation('missfbi4prepp1')
-    TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, 0, 0, 0)
+    TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
     FreezeEntityPosition(ped, true)
     SetEntityHeading(ped, GetEntityHeading(garbageVehicle))
     canTakeBag = false
     SetTimeout(1250, function()
-        DetachEntity(garbageObject, 1, false)
+        DetachEntity(garbageObject, true, false)
         DeleteObject(garbageObject)
-        TaskPlayAnim(ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, 0, 0, 0)
+        TaskPlayAnim(ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
         FreezeEntityPosition(ped, false)
         garbageObject = nil
         canTakeBag = true
     end)
     if Config.UseTarget and hasBag then
-        local CL = Config.Locations["trashcan"][currentStop]
+        local CL = Config.Locations.trashcan[currentStop]
         hasBag = false
         local pos = GetEntityCoords(ped)
         exports['qb-target']:RemoveTargetEntity(garbageVehicle)
         if (amountOfBags - 1) <= 0 then
-            QBCore.Functions.TriggerCallback('garbagejob:server:NextStop', function(hasMoreStops, nextStop, newBagAmount)
-                if hasMoreStops and nextStop ~= 0 then
-                    -- Here he puts your next location and you are not finished working yet.
-                    currentStop = nextStop
-                    currentStopNum = currentStopNum + 1
-                    amountOfBags = newBagAmount
-                    SetGarbageRoute()
-                    QBCore.Functions.Notify(Lang:t("info.all_bags"))
-                    SetVehicleDoorShut(garbageVehicle, 5, false)
+            local hasMoreStops, nextStop, newBagAmount = lib.callback.await('garbagejob:server:NextStop', false, currentStop, currentStopNum, pos)
+            if hasMoreStops and nextStop ~= 0 then
+                -- Here he puts your next location and you are not finished working yet.
+                currentStop = nextStop
+                currentStopNum = currentStopNum + 1
+                amountOfBags = newBagAmount
+                SetGarbageRoute()
+                QBCore.Functions.Notify(Lang:t("info.all_bags"))
+                SetVehicleDoorShut(garbageVehicle, 5, false)
+            else
+                if hasMoreStops and nextStop == currentStop then
+                    QBCore.Functions.Notify(Lang:t("info.depot_issue"))
+                    amountOfBags = 0
                 else
-                    if hasMoreStops and nextStop == currentStop then
-                        QBCore.Functions.Notify(Lang:t("info.depot_issue"))
-                        amountOfBags = 0
-                    else
-                        -- You are done with work here.
-                        QBCore.Functions.Notify(Lang:t("info.done_working"))
-                        SetVehicleDoorShut(garbageVehicle, 5, false)
-                        RemoveBlip(deliveryBlip)
-                        SetRouteBack()
-                        amountOfBags = 0
-                    end
+                    -- You are done with work here.
+                    QBCore.Functions.Notify(Lang:t("info.done_working"))
+                    SetVehicleDoorShut(garbageVehicle, 5, false)
+                    RemoveBlip(deliveryBlip)
+                    SetRouteBack()
+                    amountOfBags = 0
                 end
-            end, currentStop, currentStopNum, pos)
+            end
         else
             -- You haven't delivered all bags here
             amountOfBags = amountOfBags - 1
@@ -173,7 +172,7 @@ function TakeAnim()
         flags = 16,
     }, {}, {}, function()
         LoadAnimation('missfbi4prepp1')
-        TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, 0, 0, 0)
+        TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
         garbageObject = CreateObject(`prop_cs_rub_binbag_01`, 0, 0, 0, true, true, true)
         AttachEntityToEntity(garbageObject, ped, GetPedBoneIndex(ped, 57005), 0.12, 0.0, -0.05, 220.0, 120.0, 0.0, true, true, false, true, 1, true)
         StopAnimTask(PlayerPedId(), "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
@@ -200,7 +199,7 @@ local function RunWorkLoop()
         while listen do
             local ped = PlayerPedId()
             local pos = GetEntityCoords(ped)
-            local DeliveryData = Config.Locations["trashcan"][currentStop]
+            local DeliveryData = Config.Locations.trashcan[currentStop]
             local Distance = #(pos - vector3(DeliveryData.coords.x, DeliveryData.coords.y, DeliveryData.coords.z))
             if Distance < 15 or hasBag then
 
@@ -243,38 +242,37 @@ local function RunWorkLoop()
                                     }, {}, {}, {}, function() -- Done
                                         hasBag = false
                                         canTakeBag = false
-                                        DetachEntity(garbageObject, 1, false)
+                                        DetachEntity(garbageObject, true, false)
                                         DeleteObject(garbageObject)
                                         FreezeEntityPosition(ped, false)
                                         garbageObject = nil
                                         canTakeBag = true
                                         -- Looks if you have delivered all bags
                                         if (amountOfBags - 1) <= 0 then
-                                            QBCore.Functions.TriggerCallback('garbagejob:server:NextStop', function(hasMoreStops, nextStop, newBagAmount)
-                                                if hasMoreStops and nextStop ~= 0 then
-                                                    -- Here he puts your next location and you are not finished working yet.
-                                                    currentStop = nextStop
-                                                    currentStopNum = currentStopNum + 1
-                                                    amountOfBags = newBagAmount
-                                                    SetGarbageRoute()
-                                                    QBCore.Functions.Notify(Lang:t("info.all_bags"))
-                                                    listen = false
-                                                    SetVehicleDoorShut(garbageVehicle, 5, false)
+                                            local hasMoreStops, nextStop, newBagAmount = lib.callback.await('garbagejob:server:NextStop', false, currentStop, currentStopNum, pos)
+                                            if hasMoreStops and nextStop ~= 0 then
+                                                -- Here he puts your next location and you are not finished working yet.
+                                                currentStop = nextStop
+                                                currentStopNum = currentStopNum + 1
+                                                amountOfBags = newBagAmount
+                                                SetGarbageRoute()
+                                                QBCore.Functions.Notify(Lang:t("info.all_bags"))
+                                                listen = false
+                                                SetVehicleDoorShut(garbageVehicle, 5, false)
+                                            else
+                                                if hasMoreStops and nextStop == currentStop then
+                                                    QBCore.Functions.Notify(Lang:t("info.depot_issue"))
+                                                    amountOfBags = 0
                                                 else
-                                                    if hasMoreStops and nextStop == currentStop then
-                                                        QBCore.Functions.Notify(Lang:t("info.depot_issue"))
-                                                        amountOfBags = 0
-                                                    else
-                                                        -- You are done with work here.
-                                                        QBCore.Functions.Notify(Lang:t("info.done_working"))
-                                                        SetVehicleDoorShut(garbageVehicle, 5, false)
-                                                        RemoveBlip(deliveryBlip)
-                                                        SetRouteBack()
-                                                        amountOfBags = 0
-                                                        listen = false
-                                                    end
+                                                    -- You are done with work here.
+                                                    QBCore.Functions.Notify(Lang:t("info.done_working"))
+                                                    SetVehicleDoorShut(garbageVehicle, 5, false)
+                                                    RemoveBlip(deliveryBlip)
+                                                    SetRouteBack()
+                                                    amountOfBags = 0
+                                                    listen = false
                                                 end
-                                            end, currentStop, currentStopNum, pos)
+                                            end
                                             hasBag = false
                                         else
                                             -- You haven't delivered all bags here
@@ -335,7 +333,7 @@ local function CreateZone(x, y, z)
 end
 
 function SetGarbageRoute()
-    local CL = Config.Locations["trashcan"][currentStop]
+    local CL = Config.Locations.trashcan[currentStop]
     if deliveryBlip then
         RemoveBlip(deliveryBlip)
     end
@@ -346,7 +344,7 @@ function SetGarbageRoute()
     SetBlipAsShortRange(deliveryBlip, false)
     SetBlipColour(deliveryBlip, 27)
     BeginTextCommandSetBlipName("STRING")
-    AddTextComponentSubstringPlayerName(Config.Locations["trashcan"][currentStop].name)
+    AddTextComponentSubstringPlayerName(Config.Locations.trashcan[currentStop].name)
     EndTextCommandSetBlipName(deliveryBlip)
     SetBlipRoute(deliveryBlip, true)
     finished = false
@@ -384,12 +382,12 @@ local function spawnPeds()
     if not Config.Peds or not next(Config.Peds) or pedsSpawned then return end
     for i = 1, #Config.Peds do
         local current = Config.Peds[i]
-        current.model = type(current.model) == 'string' and GetHashKey(current.model) or current.model
+        current.model = type(current.model) == 'string' and joaat(current.model) or current.model
         RequestModel(current.model)
         while not HasModelLoaded(current.model) do
             Wait(0)
         end
-        local ped = CreatePed(0, current.model, current.coords, false, false)
+        local ped = CreatePed(0, current.model, current.coords.x, current.coords.y, current.coords.z, current.coords.w, false, false)
         FreezeEntityPosition(ped, true)
         SetEntityInvincible(ped, true)
         SetBlockingOfNonTemporaryEvents(ped, true)
@@ -438,53 +436,64 @@ end
 -- Events
 
 RegisterNetEvent('garbagejob:client:SetWaypointHome', function()
-    SetNewWaypoint(Config.Locations["main"].coords.x, Config.Locations["main"].coords.y)
+    SetNewWaypoint(Config.Locations.main.coords.x, Config.Locations.main.coords.y)
 end)
 
 RegisterNetEvent('qb-garbagejob:client:RequestRoute', function()
-    if garbageVehicle then continueworking = true TriggerServerEvent('garbagejob:server:PayShift', continueworking) end
-    QBCore.Functions.TriggerCallback('garbagejob:server:NewShift', function(shouldContinue, firstStop, totalBags)
-        if shouldContinue then
-            if not garbageVehicle then
-                local occupied = false
-                for _,v in pairs(Config.Locations["vehicle"].coords) do
-                    if not IsAnyVehicleNearPoint(vector3(v.x,v.y,v.z), 2.5) then
-                        QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-                            local veh = NetToVeh(netId)
-                            SetVehicleEngineOn(veh, false, true)
-                            garbageVehicle = veh
-                            SetVehicleNumberPlateText(veh, "QB-" .. tostring(math.random(1000, 9999)))
-                            SetEntityHeading(veh, v.w)
-                            exports['LegacyFuel']:SetFuel(veh, 100.0)
-                            SetVehicleFixed(veh)
-                            SetEntityAsMissionEntity(veh, true, true)
-                            SetVehicleDoorsLocked(veh, 2)
-                            currentStop = firstStop
-                            currentStopNum = 1
-                            amountOfBags = totalBags
-                            SetGarbageRoute()
-                            TriggerEvent("vehiclekeys:client:SetOwner", QBCore.Functions.GetPlate(veh))
-                            QBCore.Functions.Notify(Lang:t("info.deposit_paid", { value = Config.TruckPrice }))
-                            QBCore.Functions.Notify(Lang:t("info.started"))
-                            TriggerServerEvent("qb-garbagejob:server:payDeposit")
-                        end, Config.Vehicle, v, false)
+    if garbageVehicle then
+        continueworking = true
+        TriggerServerEvent('garbagejob:server:PayShift', continueworking)
+    end
+
+    local shouldContinue, firstStop, totalBags = lib.callback.await("garbagejob:server:NewShift", false, continueworking)
+    if shouldContinue then
+        if not garbageVehicle then
+            local occupied = false
+            for _, v in pairs(Config.Locations.vehicle.coords) do
+                if not IsAnyVehicleNearPoint(v.x,v.y,v.z, 2.5) then
+                    local netId = lib.callback.await('garbagejob:server:spawnVehicle', false, v)
+                    Wait(300)
+                    if not netId or netId == 0 or not NetworkDoesEntityExistWithNetworkId(netId) then
+                        lib.notify({
+                            description = 'Failed to spawn truck',
+                            type = 'error'
+                        })
                         return
-                    else
-                        occupied = true
                     end
-                end
-                if occupied then
-                    QBCore.Functions.Notify(Lang:t("error.all_occupied"))
+
+                    local veh = NetToVeh(netId)
+                    if veh == 0 then
+                        lib.notify({
+                            description = 'Failed to spawn truck',
+                            type = 'error'
+                        })
+                        return
+                    end
+
+                    garbageVehicle = veh
+                    SetVehicleFuelLevel(veh, 100.0)
+                    SetVehicleFixed(veh)
+                    currentStop = firstStop
+                    currentStopNum = 1
+                    amountOfBags = totalBags
+                    SetGarbageRoute()
+                    QBCore.Functions.Notify(Lang:t("info.started"))
+                    return
+                else
+                    occupied = true
                 end
             end
-            currentStop = firstStop
-            currentStopNum = 1
-            amountOfBags = totalBags
-            SetGarbageRoute()
-        else
-            QBCore.Functions.Notify(Lang:t("info.not_enough", { value = Config.TruckPrice }))
+            if occupied then
+                QBCore.Functions.Notify(Lang:t("error.all_occupied"))
+            end
         end
-    end, continueworking)
+        currentStop = firstStop
+        currentStopNum = 1
+        amountOfBags = totalBags
+        SetGarbageRoute()
+    else
+        QBCore.Functions.Notify(Lang:t("info.not_enough", { value = Config.TruckPrice }))
+    end
 end)
 
 RegisterNetEvent('qb-garbagejob:client:RequestPaycheck', function()
