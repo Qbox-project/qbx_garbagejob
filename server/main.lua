@@ -102,7 +102,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 then return end
 
-    local plate = "QB-" .. tostring(math.random(1000, 9999))
+    local plate = "GBGE" .. tostring(math.random(1000, 9999))
     SetVehicleNumberPlateText(veh, plate)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
