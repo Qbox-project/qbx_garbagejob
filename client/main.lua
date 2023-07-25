@@ -26,7 +26,7 @@ local function setupClient()
     garbageObject = nil
     endBlip = nil
     currentStopNum = 0
-if playerJob.name == Config.Jobname then
+    if playerJob.name == "garbage" then
         garbageBlip = AddBlipForCoord(Config.Locations.main.coords.x, Config.Locations.main.coords.y, Config.Locations.main.coords.z)
         SetBlipSprite(garbageBlip, 318)
         SetBlipDisplay(garbageBlip, 4)
@@ -505,22 +505,19 @@ RegisterNetEvent('qb-garbagejob:client:RequestPaycheck', function()
 end)
 
 RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
-    if playerJob.name == Config.Jobname then 
-        local MainMenu = {}
-        MainMenu[#MainMenu+1] = {isMenuHeader = true,header = Lang:t("menu.header")}
-        MainMenu[#MainMenu+1] = { header = Lang:t("menu.collect"),txt = Lang:t("menu.return_collect"),params = { event = 'qb-garbagejob:client:RequestPaycheck',}}
-        if not garbageVehicle or finished then
-            MainMenu[#MainMenu+1] = { header = Lang:t("menu.route"), txt = Lang:t("menu.request_route"), params = { event = 'qb-garbagejob:client:RequestRoute',}}
-        end
+    local MainMenu = {}
+    MainMenu[#MainMenu + 1] = { title = Lang:t("menu.collect"), description = Lang:t("menu.return_collect"), event = 'qb-garbagejob:client:RequestPaycheck' }
+    if not garbageVehicle or finished then
+        MainMenu[#MainMenu + 1] = { title = Lang:t("menu.route"), description = Lang:t("menu.request_route"), event = 'qb-garbagejob:client:RequestRoute' }
+    end
+
     lib.registerContext({
         id = 'qb_gargabejob_mainMenu',
         title = Lang:t("menu.header"),
         options = MainMenu
     })
 
-    lib.showContext('qb_gargabejob_mainMenu')    else
-        QBCore.Functions.Notify(Lang:t("error.job"))
-
+    lib.showContext('qb_gargabejob_mainMenu')
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
@@ -534,14 +531,6 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     if garbageBlip then
         RemoveBlip(garbageBlip)
     end
-    if endBlip then
-        RemoveBlip(endBlip)
-    end
-    if deliveryBlip then
-        RemoveBlip(deliveryBlip)
-    end
-    endBlip = nil
-    deliveryBlip = nil
     setupClient()
     spawnPeds()
 end)
