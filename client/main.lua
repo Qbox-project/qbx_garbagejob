@@ -87,12 +87,11 @@ end
 
 local function AnimCheck()
     CreateThread(function()
-        local ped = PlayerPedId()
-        while hasBag and not IsEntityPlayingAnim(ped, 'missfbi4prepp1', '_bag_throw_garbage_man',3) do
-            if not IsEntityPlayingAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 3) then
-                ClearPedTasksImmediately(ped)
+        while hasBag and not IsEntityPlayingAnim(cache.ped, 'missfbi4prepp1', '_bag_throw_garbage_man',3) do
+            if not IsEntityPlayingAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 3) then
+                ClearPedTasksImmediately(cache.ped)
                 LoadAnimation('missfbi4prepp1')
-                TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
+                TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
             end
             Wait(1000)
         end
@@ -100,17 +99,16 @@ local function AnimCheck()
 end
 
 local function DeliverAnim()
-    local ped = PlayerPedId()
     LoadAnimation('missfbi4prepp1')
-    TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
-    FreezeEntityPosition(ped, true)
-    SetEntityHeading(ped, GetEntityHeading(garbageVehicle))
+    TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
+    FreezeEntityPosition(cache.ped, true)
+    SetEntityHeading(cache.ped, GetEntityHeading(garbageVehicle))
     canTakeBag = false
     SetTimeout(1250, function()
         DetachEntity(garbageObject, true, false)
         DeleteObject(garbageObject)
-        TaskPlayAnim(ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
-        FreezeEntityPosition(ped, false)
+        TaskPlayAnim(cache.ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
+        FreezeEntityPosition(cache.ped, false)
         garbageObject = nil
         canTakeBag = true
     end)
@@ -160,7 +158,6 @@ local function DeliverAnim()
 end
 
 function TakeAnim()
-    local ped = PlayerPedId()
     QBCore.Functions.Progressbar("bag_pickup", Lang:t("info.picking_bag"), math.random(3000, 5000), false, true, {
         disableMovement = true,
         disableCarMovement = true,
@@ -172,10 +169,10 @@ function TakeAnim()
         flags = 16,
     }, {}, {}, function()
         LoadAnimation('missfbi4prepp1')
-        TaskPlayAnim(ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
+        TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
         garbageObject = CreateObject(`prop_cs_rub_binbag_01`, 0, 0, 0, true, true, true)
-        AttachEntityToEntity(garbageObject, ped, GetPedBoneIndex(ped, 57005), 0.12, 0.0, -0.05, 220.0, 120.0, 0.0, true, true, false, true, 1, true)
-        StopAnimTask(PlayerPedId(), "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
+        AttachEntityToEntity(garbageObject, cache.ped, GetPedBoneIndex(cache.ped, 57005), 0.12, 0.0, -0.05, 220.0, 120.0, 0.0, true, true, false, true, 1, true)
+        StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         AnimCheck()
         if Config.UseTarget and not hasBag then
             hasBag = true
@@ -188,7 +185,7 @@ function TakeAnim()
             })
         end
     end, function()
-        StopAnimTask(PlayerPedId(), "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
+        StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         QBCore.Functions.Notify(Lang:t("error.cancled"), "error")
     end)
 end
@@ -197,8 +194,7 @@ local function RunWorkLoop()
     CreateThread(function()
         local GarbText = false
         while listen do
-            local ped = PlayerPedId()
-            local pos = GetEntityCoords(ped)
+            local pos = GetEntityCoords(cache.ped)
             local DeliveryData = Config.Locations.trashcan[currentStop]
             local Distance = #(pos - vector3(DeliveryData.coords.x, DeliveryData.coords.y, DeliveryData.coords.z))
             if Distance < 15 or hasBag then
@@ -232,7 +228,7 @@ local function RunWorkLoop()
                                 exports['qbx-core']:DrawText(Lang:t("info.dispose_garbage"), 'left')
                             end
                             if IsControlJustPressed(0, 51) and hasBag then
-                                StopAnimTask(PlayerPedId(), 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
+                                StopAnimTask(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
                                 DeliverAnim()
                                 QBCore.Functions.Progressbar("deliverbag", Lang:t("info.progressbar"), 2000, false, true, {
                                         disableMovement = true,
@@ -335,7 +331,7 @@ end
 function SetGarbageRoute()
     local CL = Config.Locations.trashcan[currentStop]
     if deliveryBlip then
-        RemoveBlip(deliveryBlip)
+        RemoveBlip(deliveryBlip)f
     end
     deliveryBlip = AddBlipForCoord(CL.coords.x, CL.coords.y, CL.coords.z)
     SetBlipSprite(deliveryBlip, 1)
