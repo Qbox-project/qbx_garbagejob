@@ -331,7 +331,7 @@ end
 function SetGarbageRoute()
     local CL = Config.Locations.trashcan[currentStop]
     if deliveryBlip then
-        RemoveBlip(deliveryBlip)f
+        RemoveBlip(deliveryBlip)
     end
     deliveryBlip = AddBlipForCoord(CL.coords.x, CL.coords.y, CL.coords.z)
     SetBlipSprite(deliveryBlip, 1)
