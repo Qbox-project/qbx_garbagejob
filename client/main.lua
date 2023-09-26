@@ -115,7 +115,7 @@ local function DeliverAnim()
     if Config.UseTarget and hasBag then
         local CL = Config.Locations.trashcan[currentStop]
         hasBag = false
-        local pos = GetEntityCoords(ped)
+        local pos = GetEntityCoords(cache.ped)
         exports['qb-target']:RemoveTargetEntity(garbageVehicle)
         if (amountOfBags - 1) <= 0 then
             local hasMoreStops, nextStop, newBagAmount = lib.callback.await('garbagejob:server:NextStop', false, currentStop, currentStopNum, pos)
@@ -240,7 +240,7 @@ local function RunWorkLoop()
                                         canTakeBag = false
                                         DetachEntity(garbageObject, true, false)
                                         DeleteObject(garbageObject)
-                                        FreezeEntityPosition(ped, false)
+                                        FreezeEntityPosition(cache.ped, false)
                                         garbageObject = nil
                                         canTakeBag = true
                                         -- Looks if you have delivered all bags
