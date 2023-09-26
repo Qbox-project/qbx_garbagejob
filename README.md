@@ -1,4 +1,4 @@
-# Garbage Job V2 For QB-Core
+# Garbage Job V2 For QBOX
 
 # Rework Update
 - Job now pays per bag delivered on a configured scale.
