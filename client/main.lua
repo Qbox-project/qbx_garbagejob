@@ -304,7 +304,7 @@ end
 
 local function CreateZone(x, y, z)
     CreateThread(function()
-        PZone = CircleZone:Create(vector3(x, y, z), 15.0, { -- luacheck: ignore
+        PZone = CircleZone:Create(vector3(x, y, z), 15.0, {
             name = "NewRouteWhoDis",
             debugPoly = false,
         })
@@ -396,7 +396,7 @@ local function spawnPeds()
         else
             local options = current.zoneOptions
             if options then
-                local zone = BoxZone:Create(current.coords.xyz, options.length, options.width, { -- luacheck: ignore
+                local zone = BoxZone:Create(current.coords.xyz, options.length, options.width, {
                     name = "zone_cityhall_" .. ped,
                     heading = current.coords.w,
                     debugPoly = false
