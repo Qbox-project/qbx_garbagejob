@@ -202,7 +202,7 @@ local function RunWorkLoop()
                     if Distance < 1.5 then
                         if not GarbText then
                             GarbText = true
-                            lib.showTextUI(Lang:t("info.grab_garbage"), 'left')
+                            lib.showTextUI(Lang:t("info.grab_garbage"))
                         end
                         if IsControlJustPressed(0, 51) then
                             hasBag = true
@@ -224,7 +224,7 @@ local function RunWorkLoop()
                         if TruckDist < 2 then
                             if not TrucText then
                                 TrucText = true
-                                lib.showTextUI(Lang:t("info.dispose_garbage"), 'left')
+                                lib.showTextUI(Lang:t("info.dispose_garbage"))
                             end
                             if IsControlJustPressed(0, 51) and hasBag then
                                 StopAnimTask(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
@@ -404,7 +404,7 @@ local function spawnPeds()
                 zone:onPlayerInOut(function(inside)
                     if LocalPlayer.state.isLoggedIn then
                         if inside then
-                            lib.showTextUI(Lang:t("info.talk"), 'left')
+                            lib.showTextUI(Lang:t("info.talk"))
                             Listen4Control()
                         else
                             ControlListen = false
