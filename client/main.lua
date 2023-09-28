@@ -224,7 +224,7 @@ local function RunWorkLoop()
                         if TruckDist < 2 then
                             if not TrucText then
                                 TrucText = true
-                                exports['qbx-core']:DrawText(Lang:t("info.dispose_garbage"), 'left')
+                                lib.showTextUI(Lang:t("info.dispose_garbage"), 'left')
                             end
                             if IsControlJustPressed(0, 51) and hasBag then
                                 StopAnimTask(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
@@ -514,8 +514,7 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
     })
 
     lib.showContext('qb_gargabejob_mainMenu')    else
-        QBCore.Functions.Notify(Lang:t("error.job"))
-
+       exports.qbx_core:Notify(Lang:t("error.job"))
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
