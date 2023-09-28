@@ -143,9 +143,9 @@ lib.addCommand('cleargarbroutes', {
     params = {
         { name = 'id', help = 'Player ID (may be empty)' }
     },
-    restricted = 'admin' -- Assuming 'admin' is a valid group for restriction
+    restricted = 'admin'
 },  function(source, args)
-    local player = exports.Core:GetPlayer(tonumber(args[1]))
+    local player = exports.qbx_core:GetPlayer(tonumber(args[1]))
     if not player then return end
     local citizenId = player.PlayerData.citizenid
     local count = 0
