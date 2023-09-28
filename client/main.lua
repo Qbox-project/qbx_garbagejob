@@ -514,8 +514,6 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
     })
 
     lib.showContext('qb_gargabejob_mainMenu')   
-        else
- exports.qbx_core:Notify(Lang:t("error.job"))
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
