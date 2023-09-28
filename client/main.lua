@@ -41,7 +41,7 @@ end
 -- Functions
 
 local function LoadAnimation(dict)
-    lib.requestAnimDict(dict)
+    RequestAnimDict(dict)
     while not HasAnimDictLoaded(dict) do Wait(10) end
 end
 
