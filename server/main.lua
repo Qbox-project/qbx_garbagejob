@@ -1,4 +1,3 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
 local routes = {}
 
 local function canPay(player)
@@ -6,7 +5,7 @@ local function canPay(player)
 end
 
 lib.callback.register("garbagejob:server:NewShift", function(source, continue)
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
     local citizenId = player.PlayerData.citizenid
@@ -48,7 +47,7 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
 end)
 
 lib.callback.register("garbagejob:server:NextStop", function(source, currentStop, currentStopNum, currLocation)
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
     local citizenId = player.PlayerData.citizenid
@@ -89,7 +88,7 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
 end)
 
 lib.callback.register('garbagejob:server:EndShift', function(source)
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
     local citizenId = player.PlayerData.citizenid
@@ -106,7 +105,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     SetVehicleNumberPlateText(veh, plate)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
-    local player = QBCore.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     TriggerClientEvent('QBCore:Notify', source, Lang:t(player and not player.Functions.RemoveMoney("bank", Config.TruckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid", {value = Config.TruckPrice}), "error")
 
     return netId
@@ -114,7 +113,7 @@ end)
 
 RegisterNetEvent('garbagejob:server:PayShift', function(continue)
     local src = source
-    local player = QBCore.Functions.GetPlayer(src)
+    local player = exports.qbx_core:GetPlayer(src)
     local citizenId = player.PlayerData.citizenid
     if routes[citizenId] then
         local depositPay = routes[citizenId].depositPay
@@ -139,10 +138,15 @@ RegisterNetEvent('garbagejob:server:PayShift', function(continue)
     end
 end)
 
-QBCore.Commands.Add("cleargarbroutes", "Removes garbo routes for user (admin only)", {{name="id", help="Player ID (may be empty)"}}, false, function(source, args)
-    local player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+lib.addCommand('cleargarbroutes', {
+    help = 'Removes garbo routes for user (admin only)', 
+    params = {
+        { name = 'id', help = 'Player ID (may be empty)' }
+    },
+    restricted = 'admin' -- Assuming 'admin' is a valid group for restriction
+},  function(source, args)
+    local player = exports.Core:GetPlayer(tonumber(args[1]))
     if not player then return end
-
     local citizenId = player.PlayerData.citizenid
     local count = 0
     for k in pairs(routes) do
@@ -150,7 +154,6 @@ QBCore.Commands.Add("cleargarbroutes", "Removes garbo routes for user (admin onl
             count += 1
         end
     end
-
     TriggerClientEvent('QBCore:Notify', source, Lang:t("success.clear_routes", {value = count}), "success")
     routes[citizenId] = nil
-end, "admin")
+end)
