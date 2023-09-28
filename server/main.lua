@@ -139,7 +139,7 @@ RegisterNetEvent('garbagejob:server:PayShift', function(continue)
 end)
 
 lib.addCommand('cleargarbroutes', {
-    help = 'Removes garbo routes for user (admin only)', 
+    help = 'Removes garbo routes for user (admin only)', -- luacheck: ignore
     params = {
         { name = 'id', help = 'Player ID (may be empty)' }
     },
