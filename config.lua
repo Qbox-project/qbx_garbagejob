@@ -2,9 +2,6 @@ Config = {}
 
 Config.UseTarget = GetConvar('UseTarget', 'false') == 'true'
 
--- Job name
-Config.Jobname = 'garbage'
-
 -- Vehicle name used to spawn the garbage truck
 Config.Vehicle = 'trash2'
 
