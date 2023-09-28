@@ -25,7 +25,7 @@ local function setupClient()
     garbageObject = nil
     endBlip = nil
     currentStopNum = 0
-if playerJob.name == Config.Jobname then
+if playerJob.name == 'Config.Jobname' then
         garbageBlip = AddBlipForCoord(Config.Locations.main.coords.x, Config.Locations.main.coords.y, Config.Locations.main.coords.z)
         SetBlipSprite(garbageBlip, 318)
         SetBlipDisplay(garbageBlip, 4)
