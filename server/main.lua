@@ -143,7 +143,7 @@ lib.addCommand('cleargarbroutes', {
     params = {
         { name = 'id', help = 'Player ID (may be empty)' }
     },
-    restricted = 'admin'
+    restricted = 'group.admin'
 },  function(source, args)
     local player = exports.qbx_core:GetPlayer(tonumber(args[1]))
     if not player then return end
