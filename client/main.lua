@@ -516,7 +516,7 @@ RegisterNetEvent('qb-garbagejob:client:MainMenu', function()
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    playerJob = exports.qbx_core:GetPlayerData().job
+    playerJob = QBX.PlayerData.job
     setupClient()
     spawnPeds()
 end)
@@ -550,7 +550,7 @@ end)
 
 AddEventHandler('onResourceStart', function(resource)
     if GetCurrentResourceName() == resource then
-        playerJob = exports.qbx_core:GetPlayerData().job
+        playerJob = QBX.PlayerData.job
         setupClient()
         spawnPeds()
     end
