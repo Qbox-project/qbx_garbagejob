@@ -22,9 +22,11 @@ client_script {
 	'client/main.lua'
 }
 server_script 'server/main.lua'
+
 modules {
     'qbx_core:utils',
     'qbx_core:playerdata',
 }
+
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'
