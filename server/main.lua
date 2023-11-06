@@ -96,7 +96,7 @@ lib.callback.register('garbagejob:server:EndShift', function(source)
 end)
 
 lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
-    local netId = QBCore.Functions.CreateVehicle(source, joaat(Config.Vehicle), coords, false)
+    local netId = SpawnVehicle(source, joaat(Config.Vehicle), coords, false)
     if not netId or netId == 0 then return end
     local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 then return end
