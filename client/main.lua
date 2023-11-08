@@ -157,15 +157,23 @@ local function DeliverAnim()
 end
 
 function TakeAnim()
-    exports.qbx_core:Progressbar("bag_pickup", Lang:t("info.picking_bag"), math.random(3000, 5000), false, true, {
-        disableMovement = true,
-        disableCarMovement = true,
-        disableMouse = false,
-        disableCombat = true,
-    }, {
-        animDict = "anim@amb@clubhouse@tutorial@bkr_tut_ig3@",
-        anim = "machinic_loop_mechandplayer",
-        flags = 16,
+    lib.progressBar({
+        name = 'bag_pickup',
+        label = Lang.t("info.picking_bag"),
+        duration = math.random(3000, 5000),
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            move = true,
+            car = true,
+            mouse = false,
+            combat = true,
+        },
+        animation = {
+            dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
+            anim = 'machinic_loop_mechandplayer',
+            flags = 16,
+        },
     }, {}, {}, function()
         LoadAnimation('missfbi4prepp1')
         TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
@@ -229,11 +237,18 @@ local function RunWorkLoop()
                             if IsControlJustPressed(0, 51) and hasBag then
                                 StopAnimTask(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
                                 DeliverAnim()
-                                exports.qbx_core:Progressbar("deliverbag", Lang:t("info.progressbar"), 2000, false, true, {
-                                        disableMovement = true,
-                                        disableCarMovement = true,
-                                        disableMouse = false,
-                                        disableCombat = true,
+                                lib.progressBar({
+                                    name = 'deliverbag',
+                                    label = Lang.t("info.progressBar"),
+                                    duration = 2000,
+                                    useWhileDead = false,
+                                    canCancel = true,
+                                    disable = {
+                                        move = true,
+                                        car = true,
+                                        mouse = false,
+                                        combat = true,
+                                    },
                                     }, {}, {}, {}, function() -- Done
                                         hasBag = false
                                         canTakeBag = false
