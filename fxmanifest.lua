@@ -14,7 +14,7 @@ shared_scripts {
 	'config.lua'
 }
 
-client_script {
+client_scripts {
 	'@qbx_core/modules/playerdata.lua',
 	'@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
