@@ -1,6 +1,6 @@
 local Translations = {
     error = {
-        ["cancled"] = "Canceled",
+        ["cancel"] = "Canceled",
         ["no_truck"] = "You have no truck!",
         ["not_enough"] = "Not Enough Money (%{value} required)",
         ["too_far"] = "You are too far away from the drop-off point",
