@@ -1,7 +1,9 @@
+local config = require 'config.server'
+local sharedConfig = require 'config.shared'
 local routes = {}
 
 local function canPay(player)
-    return player.PlayerData.money.bank >= Config.TruckPrice
+    return player.PlayerData.money.bank >= sharedConfig.truckPrice
 end
 
 lib.callback.register("garbagejob:server:NewShift", function(source, continue)
@@ -15,12 +17,12 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
     local bagNum = 0
 
     if canPay(player) or continue then
-        local maxStops = math.random(Config.MinStops, #Config.Locations.trashcan)
+        local maxStops = math.random(config.minStops, #sharedConfig.locations.trashcan)
         local allStops = {}
 
         for _ = 1, maxStops do
-            local stop = math.random(#Config.Locations.trashcan)
-            local newBagAmount = math.random(Config.MinBagsPerStop, Config.MaxBagsPerStop)
+            local stop = math.random(#sharedConfig.locations.trashcan)
+            local newBagAmount = math.random(config.minBagsPerStop, config.maxBagsPerStop)
             allStops[#allStops + 1] = {stop = stop, bags = newBagAmount}
         end
 
@@ -29,7 +31,7 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
             currentStop = 1,
             started = true,
             currentDistance = 0,
-            depositPay = Config.TruckPrice,
+            depositPay = sharedConfig.truckPrice,
             actualPay = 0,
             stopsCompleted = 0,
             totalNumberOfStops = #allStops
@@ -40,7 +42,7 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
         totalNumberOfStops = #allStops
         bagNum = allStops[1].bags
     else
-        TriggerClientEvent('QBCore:Notify', source, Lang:t("error.not_enough", {value = Config.TruckPrice}), "error")
+        TriggerClientEvent('QBCore:Notify', source, Lang:t("error.not_enough", {value = sharedConfig.truckPrice}), "error")
     end
 
     return shouldContinue, nextStop, bagNum, totalNumberOfStops
@@ -51,13 +53,13 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
     if not player then return end
 
     local citizenId = player.PlayerData.citizenid
-    local currStopCoords = Config.Locations.trashcan[currentStop].coords
+    local currStopCoords = sharedConfig.locations.trashcan[currentStop].coords
     local distance = #(currLocation - currStopCoords.xyz)
     local newStop = 0
     local shouldContinue = false
     local newBagAmount = 0
 
-    if math.random(100) >= Config.CryptoStickChance and Config.GiveCryptoStick then
+    if math.random(100) >= config.cryptoStickChance and config.giveCryptoStick then
         player.Functions.AddItem("cryptostick", 1, false)
         TriggerClientEvent('QBCore:Notify', source, Lang:t("info.found_crypto"))
     end
@@ -74,7 +76,7 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
             local totalNewPay = 0
 
             for _ = 1, bagAmount do
-                totalNewPay += math.random(Config.BagLowerWorth, Config.BagUpperWorth)
+                totalNewPay += math.random(config.bagLowerWorth, config.bagUpperWorth)
             end
 
             routes[citizenId].actualPay = math.ceil(routes[citizenId].actualPay + totalNewPay)
@@ -96,7 +98,7 @@ lib.callback.register('garbagejob:server:EndShift', function(source)
 end)
 
 lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
-    local netId = SpawnVehicle(source, joaat(Config.Vehicle), coords, false)
+    local netId = SpawnVehicle(source, joaat(config.vehicle), coords, true)
     if not netId or netId == 0 then return end
     local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 then return end
@@ -106,7 +108,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
     local player = exports.qbx_core:GetPlayer(source)
-    TriggerClientEvent('QBCore:Notify', source, Lang:t(player and not player.Functions.RemoveMoney("bank", Config.TruckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid", {value = Config.TruckPrice}), "error")
+    TriggerClientEvent('QBCore:Notify', source, Lang:t(player and not player.Functions.RemoveMoney("bank", sharedConfig.truckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid", {value = sharedConfig.truckPrice}), "error")
 
     return netId
 end)
