@@ -6,7 +6,7 @@ local function canPay(player)
     return player.PlayerData.money.bank >= sharedConfig.truckPrice
 end
 
-lib.callback.register("garbagejob:server:NewShift", function(source, continue)
+lib.callback.register('garbagejob:server:newShift', function(source, continue)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
@@ -42,13 +42,13 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
         totalNumberOfStops = #allStops
         bagNum = allStops[1].bags
     else
-        TriggerClientEvent('QBCore:Notify', source, (locale("error.not_enough"):format(sharedConfig.truckPrice)), "error")
+        exports.qbx_core:Notify(source, (locale('error.not_enough'):format(sharedConfig.truckPrice)), 'error')
     end
 
     return shouldContinue, nextStop, bagNum, totalNumberOfStops
 end)
 
-lib.callback.register("garbagejob:server:NextStop", function(source, currentStop, currentStopNum, currLocation)
+lib.callback.register('garbagejob:server:nextStop', function(source, currentStop, currentStopNum, currLocation)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
@@ -59,9 +59,9 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
     local shouldContinue = false
     local newBagAmount = 0
 
-    if math.random(100) >= config.cryptoStickChance and config.giveCryptoStick then
-        player.Functions.AddItem("cryptostick", 1, false)
-        TriggerClientEvent('QBCore:Notify', source, locale("info.found_crypto"))
+    if config.giveItemReward and math.random(100) >= config.itemRewardChance then
+        player.Functions.AddItem(itemRewardName, 1, false)
+        exports.qbx_core:Notify(source, locale('info.found_crypto'))
     end
 
     if distance <= 20 then
@@ -83,13 +83,13 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
             routes[citizenId].stopsCompleted = tonumber(routes[citizenId].stopsCompleted) + 1
         end
     else
-        TriggerClientEvent('QBCore:Notify', source, locale("error.too_far"), "error")
+        exports.qbx_core:Notify(source, locale('error.too_far'), 'error')
     end
 
     return shouldContinue, newStop, newBagAmount
 end)
 
-lib.callback.register('garbagejob:server:EndShift', function(source)
+lib.callback.register('garbagejob:server:endShift', function(source)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
 
@@ -98,22 +98,18 @@ lib.callback.register('garbagejob:server:EndShift', function(source)
 end)
 
 lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
-    local netId = SpawnVehicle(source, joaat(config.vehicle), coords, true)
-    if not netId or netId == 0 then return end
-    local veh = NetworkGetEntityFromNetworkId(netId)
-    if not veh or veh == 0 then return end
-
-    local plate = "GBGE" .. tostring(math.random(1000, 9999))
+    local netId, veh = qbx.spawnVehicle({ spawnSource = coords, model = joaat(config.vehicle), warp = source })
+    local plate = 'GBGE' .. tostring(math.random(1000, 9999))
     SetVehicleNumberPlateText(veh, plate)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
     local player = exports.qbx_core:GetPlayer(source)
-    TriggerClientEvent('QBCore:Notify', source, (locale(player and not player.Functions.RemoveMoney("bank", sharedConfig.truckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid"):format(sharedConfig.truckPrice)), "error")
-
+    exports.qbx_core:Notify(source, (locale(player and not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') and 'error.not_enough' or 'info.deposit_paid'):format(sharedConfig.truckPrice)), 'error')
+    
     return netId
 end)
 
-RegisterNetEvent('garbagejob:server:PayShift', function(continue)
+RegisterNetEvent('garbagejob:server:payShift', function(continue)
     local src = source
     local player = exports.qbx_core:GetPlayer(src)
     local citizenId = player.PlayerData.citizenid
@@ -121,22 +117,22 @@ RegisterNetEvent('garbagejob:server:PayShift', function(continue)
         local depositPay = routes[citizenId].depositPay
         if tonumber(routes[citizenId].stopsCompleted) < tonumber(routes[citizenId].totalNumberOfStops) then
             depositPay = 0
-            TriggerClientEvent('QBCore:Notify', src, (locale("error.early_finish"):format(routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops)), "error")
+            exports.qbx_core:Notify(src, (locale('error.early_finish'):format(routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops)), 'error')
         end
         if continue then
             depositPay = 0
         end
         local totalToPay = depositPay + routes[citizenId].actualPay
-        local payoutDeposit = (locale("info.payout_deposit"):format(depositPay))
+        local payoutDeposit = (locale('info.payout_deposit'):format(depositPay))
         if depositPay == 0 then
-            payoutDeposit = ""
+            payoutDeposit = ''
         end
 
-        player.Functions.AddMoney("bank", totalToPay , 'garbage-payslip')
-        TriggerClientEvent('QBCore:Notify', src, (locale("success.pay_slip"):format(totalToPay, payoutDeposit)), "success")
+        player.Functions.AddMoney('bank', totalToPay , 'garbage-payslip')
+        exports.qbx_core:Notify(src, (locale('success.pay_slip'):format(totalToPay, payoutDeposit)), 'success')
         routes[citizenId] = nil
     else
-        TriggerClientEvent('QBCore:Notify', source, locale("error.never_clocked_on"), "error")
+        exports.qbx_core:Notify(source, locale('error.never_clocked_on'), 'error')
     end
 end)
 
@@ -156,6 +152,6 @@ lib.addCommand('cleargarbroutes', {
             count += 1
         end
     end
-    TriggerClientEvent('QBCore:Notify', source, (locale("success.clear_routes"):format(count)), "success")
+    exports.qbx_core:Notify(source, (locale('success.clear_routes'):format(count)), 'success')
     routes[citizenId] = nil
 end)

@@ -1,7 +1,8 @@
 return {
     vehicle = 'trash2',
-    giveCryptoStick = true,
-    cryptoStickChance = 75,
+    giveItemReward = true,
+    itemRewardChance = 75,
+    itemRewardName = 'cryptostick',
     minStops = 5,
     bagUpperWorth = 100,
     bagLowerWorth = 50,
