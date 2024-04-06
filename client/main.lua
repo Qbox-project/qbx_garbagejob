@@ -16,6 +16,7 @@ local garbageBinZone
 local finished = false
 local continueWorking = false
 local garbText = false
+local trucText = false
 local pedsSpawned = false
 
 local function setupClient()
@@ -171,7 +172,7 @@ local function DeliverAnim()
                 options = {
                     {
                         label = locale('target.grab_garbage'),
-                        icon = 'fa-solid fa-trash', 
+                        icon = 'fa-solid fa-trash',
                         onSelect = TakeAnim,
                         distance = 2.0,
                         canInteract = function()
@@ -216,8 +217,8 @@ function TakeAnim()
             local options = {
                 {
                     name = 'garbage_deliver',
-                    label = locale('target.dispose_garbage'), 
-                    icon = 'fa-solid fa-truck', 
+                    label = locale('target.dispose_garbage'),
+                    icon = 'fa-solid fa-truck',
                     onSelect = DeliverAnim,
                     canInteract = function()
                         return hasBag
@@ -258,11 +259,10 @@ local function runWorkLoop()
             if DoesEntityExist(garbageVehicle) then
                 local Coords = GetOffsetFromEntityInWorldCoords(garbageVehicle, 0.0, -4.5, 0.0)
                 local TruckDist = #(pos - Coords)
-                local TrucText = false
 
                 if TruckDist < 2 then
-                    if not TrucText then
-                        TrucText = true
+                    if not trucText then
+                        trucText = true
                         lib.showTextUI(locale('info.dispose_garbage'))
                     end
                     if IsControlJustPressed(0, 51) and hasBag then
@@ -325,9 +325,9 @@ local function runWorkLoop()
                             end
 
                             Wait(1500)
-                            if TrucText then
+                            if trucText then
                                 lib.hideTextUI()
-                                TrucText = false
+                                trucText = false
                             end
                         else
                             exports.qbx_core:Notify(locale('error.cancel'), 'error')
@@ -389,7 +389,7 @@ function SetGarbageRoute()
                 options = {
                     {
                         label = locale('target.grab_garbage'),
-                        icon = 'fa-solid fa-trash', 
+                        icon = 'fa-solid fa-trash',
                         onSelect = TakeAnim,
                         canInteract = function()
                             return not hasBag
@@ -427,14 +427,14 @@ local function spawnPeds()
             exports.ox_target:addLocalEntity(ped, {
                 {
                     name = 'garbage_ped',
-                    label = locale('target.talk'), 
-                    icon = 'fa-solid fa-recycle', 
+                    label = locale('target.talk'),
+                    icon = 'fa-solid fa-recycle',
                     groups = 'garbage',
                     onSelect = garbageMenu,
                 }
             })
         else
-            local zone = lib.zones.box({
+            lib.zones.box({
                 coords = vec3(current.coords.x, current.coords.y, current.coords.z+0.5),
                 size = vec3(3.0, 3.0, 2.0),
                 rotation = current.coords.w,
