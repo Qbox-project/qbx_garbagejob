@@ -44,20 +44,20 @@ end
 local function garbageMenu()
     local options = {}
     options[#options + 1] = {
-        title = Lang:t("menu.collect"),
-        description = Lang:t("menu.return_collect"),
+        title = locale("menu.collect"),
+        description = locale("menu.return_collect"),
         event = 'qb-garbagejob:client:RequestPaycheck'
     }
     if not garbageVehicle or finished then
         options[#options + 1] = {
-            title = Lang:t("menu.route"),
-            description = Lang:t("menu.request_route"),
+            title = locale("menu.route"),
+            description = locale("menu.request_route"),
             event = 'qb-garbagejob:client:RequestRoute'
         }
     end
     lib.registerContext({
         id = 'qb_gargabejob_mainMenu',
-        title = Lang:t("menu.header"),
+        title = locale("menu.header"),
         options = options
     })
 
@@ -148,15 +148,15 @@ local function DeliverAnim()
                 currentStopNum = currentStopNum + 1
                 amountOfBags = newBagAmount
                 SetGarbageRoute()
-                exports.qbx_core:Notify(Lang:t("info.all_bags"))
+                exports.qbx_core:Notify(locale("info.all_bags"))
                 SetVehicleDoorShut(garbageVehicle, 5, false)
             else
                 if hasMoreStops and nextStop == currentStop then
-                    exports.qbx_core:Notify(Lang:t("info.depot_issue"))
+                    exports.qbx_core:Notify(locale("info.depot_issue"))
                     amountOfBags = 0
                 else
                     -- You are done with work here.
-                    exports.qbx_core:Notify(Lang:t("info.done_working"))
+                    exports.qbx_core:Notify(locale("info.done_working"))
                     SetVehicleDoorShut(garbageVehicle, 5, false)
                     RemoveBlip(deliveryBlip)
                     SetRouteBack()
@@ -167,13 +167,13 @@ local function DeliverAnim()
             -- You haven't delivered all bags here
             amountOfBags = amountOfBags - 1
             if amountOfBags > 1 then
-                exports.qbx_core:Notify(Lang:t("info.bags_left", { value = amountOfBags }))
+                exports.qbx_core:Notify((locale("info.bags_left"):format(amountOfBags)))
             else
-                exports.qbx_core:Notify(Lang:t("info.bags_still", { value = amountOfBags }))
+                exports.qbx_core:Notify((locale("info.bags_still"):format(amountOfBags)))
             end
             exports['qb-target']:AddCircleZone('garbagebin', vector3(CL.coords.x, CL.coords.y, CL.coords.z), 2.0,{
                 name = 'garbagebin', debugPoly = false, useZ=true}, {
-                options = {{label = Lang:t("target.grab_garbage"),icon = 'fa-solid fa-trash', action = function() TakeAnim() end}},
+                options = {{label = locale("target.grab_garbage"),icon = 'fa-solid fa-trash', action = function() TakeAnim() end}},
                 distance = 2.0
             })
         end
@@ -183,7 +183,7 @@ end
 function TakeAnim()
     if lib.progressBar({
             duration = math.random(3000, 5000),
-            label = Lang:t("info.picking_bag"),
+            label = locale("info.picking_bag"),
             useWhileDead = false,
             canCancel = true,
             disable = {
@@ -208,7 +208,7 @@ function TakeAnim()
             exports['qb-target']:RemoveZone("garbagebin")
             exports['qb-target']:AddTargetEntity(garbageVehicle, {
                 options = {
-                    { label = Lang:t("target.dispose_garbage"), icon = 'fa-solid fa-truck', action = function()
+                    { label = locale("target.dispose_garbage"), icon = 'fa-solid fa-truck', action = function()
                         DeliverAnim() end, canInteract = function()
                         if hasBag then return true end
                         return false
@@ -219,7 +219,7 @@ function TakeAnim()
         end
     else
         StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
-        exports.qbx_core:Notify(Lang:t("error.cancel"), "error")
+        exports.qbx_core:Notify(locale("error.cancel"), "error")
     end
 end
 
@@ -235,7 +235,7 @@ local function RunWorkLoop()
                     if Distance < 1.5 then
                         if not GarbText then
                             GarbText = true
-                            lib.showTextUI(Lang:t("info.grab_garbage"))
+                            lib.showTextUI(locale("info.grab_garbage"))
                         end
                         if IsControlJustPressed(0, 51) then
                             hasBag = true
@@ -257,14 +257,14 @@ local function RunWorkLoop()
                         if TruckDist < 2 then
                             if not TrucText then
                                 TrucText = true
-                                lib.showTextUI(Lang:t("info.dispose_garbage"))
+                                lib.showTextUI(locale("info.dispose_garbage"))
                             end
                             if IsControlJustPressed(0, 51) and hasBag then
                                 StopAnimTask(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 1.0)
                                 DeliverAnim()
                                 if lib.progressBar({
                                         duration = 2000,
-                                        label = Lang:t("info.progressbar"),
+                                        label = locale("info.progressbar"),
                                         useWhileDead = false,
                                         canCancel = true,
                                         disable = {
@@ -291,16 +291,16 @@ local function RunWorkLoop()
                                             currentStopNum = currentStopNum + 1
                                             amountOfBags = newBagAmount
                                             SetGarbageRoute()
-                                            exports.qbx_core:Notify(Lang:t("info.all_bags"))
+                                            exports.qbx_core:Notify(locale("info.all_bags"))
                                             listen = false
                                             SetVehicleDoorShut(garbageVehicle, 5, false)
                                         else
                                             if hasMoreStops and nextStop == currentStop then
-                                                exports.qbx_core:Notify(Lang:t("info.depot_issue"))
+                                                exports.qbx_core:Notify(locale("info.depot_issue"))
                                                 amountOfBags = 0
                                             else
                                                 -- You are done with work here.
-                                                exports.qbx_core:Notify(Lang:t("info.done_working"))
+                                                exports.qbx_core:Notify(locale("info.done_working"))
                                                 SetVehicleDoorShut(garbageVehicle, 5, false)
                                                 RemoveBlip(deliveryBlip)
                                                 SetRouteBack()
@@ -313,9 +313,9 @@ local function RunWorkLoop()
                                         -- You haven't delivered all bags here
                                         amountOfBags = amountOfBags - 1
                                         if amountOfBags > 1 then
-                                            exports.qbx_core:Notify(Lang:t("info.bags_left", { value = amountOfBags }))
+                                            exports.qbx_core:Notify((locale("info.bags_left"):format(amountOfBags)))
                                         else
-                                            exports.qbx_core:Notify(Lang:t("info.bags_still", { value = amountOfBags }))
+                                            exports.qbx_core:Notify((locale("info.bags_still"):format(amountOfBags)))
                                         end
                                         hasBag = false
                                     end
@@ -326,12 +326,12 @@ local function RunWorkLoop()
                                         TrucText = false
                                     end
                                 else
-                                    exports.qbx_core:Notify(Lang:t("error.cancel"), "error")
+                                    exports.qbx_core:Notify(locale("error.cancel"), "error")
                                 end
                             end
                         end
                     else
-                        exports.qbx_core:Notify(Lang:t("error.no_truck"), "error")
+                        exports.qbx_core:Notify(locale("error.no_truck"), "error")
                         hasBag = false
                     end
                 end
@@ -385,7 +385,7 @@ function SetGarbageRoute()
     if config.useTarget and not hasBag then
         exports['qb-target']:AddCircleZone('garbagebin', vector3(CL.coords.x, CL.coords.y, CL.coords.z), 2.0,{
             name = 'garbagebin', debugPoly = false, useZ=true }, {
-            options = {{label = Lang:t("target.grab_garbage"), icon = 'fa-solid fa-trash', action = function() TakeAnim() end }},
+            options = {{label = locale("target.grab_garbage"), icon = 'fa-solid fa-trash', action = function() TakeAnim() end }},
             distance = 2.0
         })
     end
@@ -429,7 +429,7 @@ local function spawnPeds()
 
         if config.useTarget then
             exports['qb-target']:AddTargetEntity(ped, {
-                options = {{type = "client", event = "qb-garbagejob:client:MainMenu", label = Lang:t("target.talk"), icon = 'fa-solid fa-recycle', job = "garbage",}},
+                options = {{type = "client", event = "qb-garbagejob:client:MainMenu", label = locale("target.talk"), icon = 'fa-solid fa-recycle', job = "garbage",}},
                 distance = 2.0
             })
         else
@@ -443,7 +443,7 @@ local function spawnPeds()
                 zone:onPlayerInOut(function(inside)
                     if LocalPlayer.state.isLoggedIn then
                         if inside then
-                            lib.showTextUI(Lang:t("info.talk"))
+                            lib.showTextUI(locale("info.talk"))
                             Listen4Control()
                         else
                             ControlListen = false
@@ -511,14 +511,14 @@ RegisterNetEvent('qb-garbagejob:client:RequestRoute', function()
                     currentStopNum = 1
                     amountOfBags = totalBags
                     SetGarbageRoute()
-                    exports.qbx_core:Notify(Lang:t("info.started"))
+                    exports.qbx_core:Notify(locale("info.started"))
                     return
                 else
                     occupied = true
                 end
             end
             if occupied then
-                exports.qbx_core:Notify(Lang:t("error.all_occupied"))
+                exports.qbx_core:Notify(locale("error.all_occupied"))
             end
         end
         currentStop = firstStop
@@ -526,14 +526,14 @@ RegisterNetEvent('qb-garbagejob:client:RequestRoute', function()
         amountOfBags = totalBags
         SetGarbageRoute()
     else
-        exports.qbx_core:Notify(Lang:t("info.not_enough", { value = sharedConfig.truckPrice }))
+        exports.qbx_core:Notify((locale("info.not_enough"):format(sharedConfig.truckPrice)))
     end
 end)
 
 RegisterNetEvent('qb-garbagejob:client:RequestPaycheck', function()
     if garbageVehicle then
         BringBackCar()
-        exports.qbx_core:Notify(Lang:t("info.truck_returned"))
+        exports.qbx_core:Notify(locale("info.truck_returned"))
     end
     TriggerServerEvent('garbagejob:server:PayShift')
 end)

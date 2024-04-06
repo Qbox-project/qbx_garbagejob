@@ -42,7 +42,7 @@ lib.callback.register("garbagejob:server:NewShift", function(source, continue)
         totalNumberOfStops = #allStops
         bagNum = allStops[1].bags
     else
-        TriggerClientEvent('QBCore:Notify', source, Lang:t("error.not_enough", {value = sharedConfig.truckPrice}), "error")
+        TriggerClientEvent('QBCore:Notify', source, (locale("error.not_enough"):format(sharedConfig.truckPrice)), "error")
     end
 
     return shouldContinue, nextStop, bagNum, totalNumberOfStops
@@ -61,7 +61,7 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
 
     if math.random(100) >= config.cryptoStickChance and config.giveCryptoStick then
         player.Functions.AddItem("cryptostick", 1, false)
-        TriggerClientEvent('QBCore:Notify', source, Lang:t("info.found_crypto"))
+        TriggerClientEvent('QBCore:Notify', source, locale("info.found_crypto"))
     end
 
     if distance <= 20 then
@@ -83,7 +83,7 @@ lib.callback.register("garbagejob:server:NextStop", function(source, currentStop
             routes[citizenId].stopsCompleted = tonumber(routes[citizenId].stopsCompleted) + 1
         end
     else
-        TriggerClientEvent('QBCore:Notify', source, Lang:t("error.too_far"), "error")
+        TriggerClientEvent('QBCore:Notify', source, locale("error.too_far"), "error")
     end
 
     return shouldContinue, newStop, newBagAmount
@@ -108,7 +108,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
     local player = exports.qbx_core:GetPlayer(source)
-    TriggerClientEvent('QBCore:Notify', source, Lang:t(player and not player.Functions.RemoveMoney("bank", sharedConfig.truckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid", {value = sharedConfig.truckPrice}), "error")
+    TriggerClientEvent('QBCore:Notify', source, (locale(player and not player.Functions.RemoveMoney("bank", sharedConfig.truckPrice, "garbage-deposit") and "error.not_enough" or "info.deposit_paid"):format(sharedConfig.truckPrice)), "error")
 
     return netId
 end)
@@ -121,22 +121,22 @@ RegisterNetEvent('garbagejob:server:PayShift', function(continue)
         local depositPay = routes[citizenId].depositPay
         if tonumber(routes[citizenId].stopsCompleted) < tonumber(routes[citizenId].totalNumberOfStops) then
             depositPay = 0
-            TriggerClientEvent('QBCore:Notify', src, Lang:t("error.early_finish", {completed = routes[citizenId].stopsCompleted, total = routes[citizenId].totalNumberOfStops}), "error")
+            TriggerClientEvent('QBCore:Notify', src, (locale("error.early_finish"):format(routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops)), "error")
         end
         if continue then
             depositPay = 0
         end
         local totalToPay = depositPay + routes[citizenId].actualPay
-        local payoutDeposit = Lang:t("info.payout_deposit", {value = depositPay})
+        local payoutDeposit = (locale("info.payout_deposit"):format(depositPay))
         if depositPay == 0 then
             payoutDeposit = ""
         end
 
         player.Functions.AddMoney("bank", totalToPay , 'garbage-payslip')
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("success.pay_slip", {total = totalToPay, deposit = payoutDeposit}), "success")
+        TriggerClientEvent('QBCore:Notify', src, (locale("success.pay_slip"):format(totalToPay, payoutDeposit)), "success")
         routes[citizenId] = nil
     else
-        TriggerClientEvent('QBCore:Notify', source, Lang:t("error.never_clocked_on"), "error")
+        TriggerClientEvent('QBCore:Notify', source, locale("error.never_clocked_on"), "error")
     end
 end)
 
@@ -156,6 +156,6 @@ lib.addCommand('cleargarbroutes', {
             count += 1
         end
     end
-    TriggerClientEvent('QBCore:Notify', source, Lang:t("success.clear_routes", {value = count}), "success")
+    TriggerClientEvent('QBCore:Notify', source, (locale("success.clear_routes"):format(count)), "success")
     routes[citizenId] = nil
 end)
