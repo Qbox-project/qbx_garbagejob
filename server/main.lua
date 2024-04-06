@@ -60,7 +60,7 @@ lib.callback.register('garbagejob:server:nextStop', function(source, currentStop
     local newBagAmount = 0
 
     if config.giveItemReward and math.random(100) >= config.itemRewardChance then
-        player.Functions.AddItem(itemRewardName, 1, false)
+        player.Functions.AddItem(config.itemRewardName, 1, false)
         exports.qbx_core:Notify(source, locale('info.found_crypto'))
     end
 
