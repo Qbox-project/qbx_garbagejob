@@ -105,7 +105,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     SetVehicleDoorsLocked(veh, 2)
     local player = exports.qbx_core:GetPlayer(source)
     exports.qbx_core:Notify(source, (locale(player and not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') and 'error.not_enough' or 'info.deposit_paid'):format(sharedConfig.truckPrice)), 'error')
-    
+
     return netId
 end)
 
@@ -123,7 +123,7 @@ RegisterNetEvent('garbagejob:server:payShift', function(continue)
             depositPay = 0
         end
         local totalToPay = depositPay + routes[citizenId].actualPay
-        local payoutDeposit = (locale('info.payout_deposit'):format(depositPay))
+        local payoutDeposit = locale('info.payout_deposit', depositPay)
         if depositPay == 0 then
             payoutDeposit = ''
         end
@@ -139,12 +139,13 @@ end)
 lib.addCommand('cleargarbroutes', {
     help = 'Removes garbo routes for user (admin only)', -- luacheck: ignore
     params = {
-        { name = 'id', help = 'Player ID (may be empty)' }
+        { name = 'id', help = 'Player ID', type = 'playerId' }
     },
     restricted = 'group.admin'
 },  function(source, args)
-    local player = exports.qbx_core:GetPlayer(tonumber(args[1]))
+    local player = exports.qbx_core:GetPlayer(args.id)
     if not player then return end
+
     local citizenId = player.PlayerData.citizenid
     local count = 0
     for k in pairs(routes) do
@@ -152,6 +153,7 @@ lib.addCommand('cleargarbroutes', {
             count += 1
         end
     end
+
     exports.qbx_core:Notify(source, (locale('success.clear_routes'):format(count)), 'success')
     routes[citizenId] = nil
 end)
