@@ -98,7 +98,7 @@ lib.callback.register('garbagejob:server:endShift', function(source)
 end)
 
 lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
-    local netId, veh = qbx.spawnVehicle({ spawnSource = coords, model = joaat(config.vehicle), warp = source })
+    local netId, veh = qbx.spawnVehicle({ spawnSource = coords, model = joaat(config.vehicle), warp = GetPlayerPed(source) })
     local plate = 'GBGE' .. tostring(math.random(1000, 9999))
     SetVehicleNumberPlateText(veh, plate)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
