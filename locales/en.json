@@ -48,6 +48,7 @@
         "store_truck": "[E] - Store Garbage Truck",
         "get_truck": "[E] - Garbage Truck",
         "picking_bag": "Grabbing garbage bag..",
-        "talk": "[E] Talk to Garbage Man"
+        "talk": "[E] Talk to Garbage Man",
+        "stops_left": "You have %s stops left!"
     }
 }

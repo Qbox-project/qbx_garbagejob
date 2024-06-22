@@ -41,6 +41,9 @@ lib.callback.register('garbagejob:server:newShift', function(source, continue)
         shouldContinue = true
         totalNumberOfStops = #allStops
         bagNum = allStops[1].bags
+
+        -- Notify the player about the total number of stops left.
+        exports.qbx_core:Notify(source, (locale('info.stops_left'):format(totalNumberOfStops)), 'info')
     else
         exports.qbx_core:Notify(source, (locale('error.not_enough'):format(sharedConfig.truckPrice)), 'error')
     end
@@ -81,6 +84,11 @@ lib.callback.register('garbagejob:server:nextStop', function(source, currentStop
 
             routes[citizenId].actualPay = math.ceil(routes[citizenId].actualPay + totalNewPay)
             routes[citizenId].stopsCompleted = tonumber(routes[citizenId].stopsCompleted) + 1
+
+            -- Notify the player about the number of stops left
+            local stopsLeft = #routes[citizenId].stops - routes[citizenId].stopsCompleted
+            exports.qbx_core:Notify(source, (locale('info.stops_left'):format(stopsLeft)), 'info')
+
         end
     else
         exports.qbx_core:Notify(source, locale('error.too_far'), 'error')
