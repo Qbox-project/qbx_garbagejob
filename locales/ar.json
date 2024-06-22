@@ -33,7 +33,8 @@
         "found_crypto": "وجدت شيء ما",
         "payout_deposit": "(+ $%s الوديعة)",
         "store_truck":  "~g~E~w~ - ﺔﻣﺎﻤﻘﻟﺍ ﺔﻨﺣﺎﺷ ﻦﻳﺰﺨﺗ",
-        "get_truck":  "~g~E~w~ - ﺔﻣﺎﻤﻘﻟﺍ ﺔﻨﺣﺎﺷ"
+        "get_truck":  "~g~E~w~ - ﺔﻣﺎﻤﻘﻟﺍ ﺔﻨﺣﺎﺷ",
+        "stops_left": "You have %s stops left!"
     },
     "warning": {}
 }

@@ -48,6 +48,7 @@
         "store_truck": "[E] - Uložit odpadkový vůz",
         "get_truck": "[E] - Odpadkový vůz",
         "picking_bag": "Vybírání pytle na odpadky..",
-        "talk": "[E] Promluvit si s odpadkovým mužem"
+        "talk": "[E] Promluvit si s odpadkovým mužem",
+        "stops_left": "You have %s stops left!"
     }
 }

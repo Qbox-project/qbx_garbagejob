@@ -48,7 +48,8 @@
         "store_truck": "[E] - Çöp Kamyonunu Depola",
         "get_truck": "[E] - Çöp Kamyonu",
         "picking_bag": "Çöp Torbası alınıyor..",
-        "talk": "[E] Çöpçü ile konuş"
+        "talk": "[E] Çöpçü ile konuş",
+        "stops_left": "You have %s stops left!"
     },
     "warning": {}
 }

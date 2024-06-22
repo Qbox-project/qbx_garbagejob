@@ -33,7 +33,8 @@
         "found_crypto": "Du hast einen Kryptostick auf dem Boden gefunden",
         "payout_deposit": "(+ $%s eingelagert)",
         "store_truck": "~g~E~w~ - Müllwagen Einparken",
-        "get_truck": "~g~E~w~ - Müllwagen"
+        "get_truck": "~g~E~w~ - Müllwagen",
+        "stops_left": "You have %s stops left!"
     },
     "warning": {}
 }

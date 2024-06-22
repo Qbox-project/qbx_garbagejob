@@ -48,6 +48,7 @@
         "store_truck": "[E] - Guardar Camião de Lixo",
         "get_truck": "[E] - Camião de Lixo",
         "picking_bag": "A agarrar saco de lixo..",
-        "talk": "[E] Falar com o Lixieiro"
+        "talk": "[E] Falar com o Lixieiro",
+        "stops_left": "You have %s stops left!"
     }
 }
