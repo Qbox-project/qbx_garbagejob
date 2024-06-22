@@ -33,7 +33,8 @@
         "found_crypto": "Hai trovato una cryptostick!",
         "payout_deposit": "(+ $%s di cauzione)",
         "store_truck": "[E] - Deposita camion",
-        "get_truck": "[E] - Camion della spazzatura"
+        "get_truck": "[E] - Camion della spazzatura",
+        "stops_left": "You have %s stops left!"
     },
     "warning": {}
 }

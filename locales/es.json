@@ -48,7 +48,8 @@
         "store_truck": "[E] - Almacenar camión de basura",
         "get_truck": "[E] - Camión de la basura",
         "picking_bag": "Agarrando bolsa de basura..",
-        "talk": "[E] Hablar con el hombre de la basura"
+        "talk": "[E] Hablar con el hombre de la basura",
+        "stops_left": "You have %s stops left!"
     },
     "warning": {}
 }

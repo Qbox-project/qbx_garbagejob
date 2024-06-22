@@ -48,6 +48,7 @@
         "store_truck": "[E] - Garer le Camion Benne",
         "get_truck": "[E] - Sortir un Camion Benne",
         "picking_bag": "Ramassage du sac poubelle...",
-        "talk": "[E] Parler avec l'éboueur"
+        "talk": "[E] Parler avec l'éboueur",
+        "stops_left": "You have %s stops left!"
     }
 }
