@@ -107,8 +107,7 @@ local function AnimCheck()
         while hasBag and not IsEntityPlayingAnim(cache.ped, 'missfbi4prepp1', '_bag_throw_garbage_man',3) do
             if not IsEntityPlayingAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 3) then
                 ClearPedTasksImmediately(cache.ped)
-                lib.requestAnimDict('missfbi4prepp1', 2000)
-                TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
+                lib.playAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
             end
             Wait(1000)
         end
@@ -116,15 +115,14 @@ local function AnimCheck()
 end
 
 local function DeliverAnim()
-    lib.requestAnimDict('missfbi4prepp1', 2000)
-    TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
+    lib.playAnim(cache.ped, 'missfbi4prepp1', '_bag_throw_garbage_man', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
     FreezeEntityPosition(cache.ped, true)
     SetEntityHeading(cache.ped, GetEntityHeading(garbageVehicle))
     canTakeBag = false
     SetTimeout(1250, function()
         DetachEntity(garbageObject, true, false)
         DeleteObject(garbageObject)
-        TaskPlayAnim(cache.ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
+        lib.playAnim(cache.ped, 'missfbi4prepp1', 'exit', 8.0, 8.0, 1100, 48, 0.0, false, false, false)
         FreezeEntityPosition(cache.ped, false)
         garbageObject = nil
         canTakeBag = true
@@ -202,9 +200,10 @@ function TakeAnim()
                 clip = 'machinic_loop_mechandplayer'
             }
         }) then
-        lib.requestAnimDict('missfbi4prepp1', 2000)
-        TaskPlayAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
+        lib.playAnim(cache.ped, 'missfbi4prepp1', '_bag_walk_garbage_man', 6.0, -6.0, -1, 49, 0, false, false, false)
+        lib.requestModel(`prop_cs_rub_binbag_01`, 10000)
         garbageObject = CreateObject(`prop_cs_rub_binbag_01`, 0, 0, 0, true, true, true)
+        SetModelAsNoLongerNeeded(`prop_cs_rub_binbag_01`)
         AttachEntityToEntity(garbageObject, cache.ped, GetPedBoneIndex(cache.ped, 57005), 0.12, 0.0, -0.05, 220.0, 120.0, 0.0, true, true, false, true, 1, true)
         StopAnimTask(cache.ped, 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@', 'machinic_loop_mechandplayer', 1.0)
         AnimCheck()
@@ -417,6 +416,7 @@ local function spawnPeds()
 
         lib.requestModel(current.model, 5000)
         local ped = CreatePed(0, current.model, current.coords.x, current.coords.y, current.coords.z, current.coords.w, false, false)
+        SetModelAsNoLongerNeeded(current.model)
         FreezeEntityPosition(ped, true)
         SetEntityInvincible(ped, true)
         SetBlockingOfNonTemporaryEvents(ped, true)
