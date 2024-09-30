@@ -1,0 +1,54 @@
+{
+    "error": {
+        "cancel": "Cancelado",
+        "no_truck": "Você não tem caminhão!",
+        "not_enough": "Dinheiro Insuficiente (%s necessário)",
+        "too_far": "Você está muito longe do ponto de entrega",
+        "early_finish": "Devido a término antecipado (Concluído: %s Total: %s), seu depósito não será devolvido.",
+        "never_clocked_on": "Você nunca registrou o horário!",
+        "all_occupied": "Todas as vagas estão ocupadas"
+    },
+    "success": {
+        "clear_routes": "Rotas dos usuários limpos, eles tinham %s rotas armazenados",
+        "pay_slip": "Você recebeu $%s, seu contracheque %s foi depositado em sua conta bancária!"
+    },
+    "target": {
+        "talk": "Falar com o Lixeiro",
+        "grab_garbage": "Pegar saco de lixo",
+        "dispose_garbage": "Descartar Saco de Lixo"
+    },
+    "menu": {
+        "header": "Menu Principal de Lixo",
+        "collect": "Coletar Salário",
+        "return_collect": "Retorne o caminhão e colete seu salário aqui!",
+        "route": "Solicitar Rota",
+        "request_route": "Solicitar uma Rota de Lixo"
+    },
+    "info": {
+        "payslip_collect": "[E] - Contracheque",
+        "payslip": "Contracheque",
+        "not_enough": "Você não tem dinheiro suficiente para o depósito... O custo do depósito é $%s",
+        "deposit_paid": "Você pagou $%s de depósito!",
+        "no_deposit": "Você não pagou depósito neste veículo...",
+        "truck_returned": "Caminhão devolvido, colete seu contracheque para receber seu pagamento e depósito de volta!",
+        "bags_left": "Ainda há %s sacos restantes!",
+        "bags_still": "Ainda há %s saco ali!",
+        "all_bags": "Todos os sacos de lixo estão prontos, prossiga para o próximo local!",
+        "depot_issue": "Houve um problema no depósito, por favor retorne imediatamente!",
+        "done_working": "Você terminou de trabalhar! Volte para o depósito.",
+        "started": "Você começou a trabalhar, localização marcada no GPS!",
+        "grab_garbage": "[E] Pegar um saco de lixo",
+        "stand_grab_garbage": "Fique aqui para pegar um saco de lixo.",
+        "dispose_garbage": "[E] Descartar Saco de Lixo",
+        "progressbar": "Colocando saco no caminhão de lixo..",
+        "garbage_in_truck": "Coloque o saco em seu caminhão..",
+        "stand_here": "Fique aqui..",
+        "found_crypto": "Você encontrou um cryptostick no chão",
+        "payout_deposit": "(+ $%s de depósito)",
+        "store_truck": "[E] - Armazenar Caminhão de Lixo",
+        "get_truck": "[E] - Caminhão de Lixo",
+        "picking_bag": "Pegando saco de lixo..",
+        "talk": "[E] Falar com o Lixeiro",
+        "stops_left": "Você tem %s paradas restantes!"
+    }
+}

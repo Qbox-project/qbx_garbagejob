@@ -43,9 +43,9 @@ lib.callback.register('garbagejob:server:newShift', function(source, continue)
         bagNum = allStops[1].bags
 
         -- Notify the player about the total number of stops left.
-        exports.qbx_core:Notify(source, (locale('info.stops_left'):format(totalNumberOfStops)), 'info')
+        exports.qbx_core:Notify(source, locale('info.stops_left', totalNumberOfStops), 'info')
     else
-        exports.qbx_core:Notify(source, (locale('error.not_enough'):format(sharedConfig.truckPrice)), 'error')
+        exports.qbx_core:Notify(source, locale('error.not_enough', sharedConfig.truckPrice), 'error')
     end
 
     return shouldContinue, nextStop, bagNum, totalNumberOfStops
@@ -87,7 +87,7 @@ lib.callback.register('garbagejob:server:nextStop', function(source, currentStop
 
             -- Notify the player about the number of stops left
             local stopsLeft = #routes[citizenId].stops - routes[citizenId].stopsCompleted
-            exports.qbx_core:Notify(source, (locale('info.stops_left'):format(stopsLeft)), 'info')
+            exports.qbx_core:Notify(source, locale('info.stops_left', stopsLeft), 'info')
 
         end
     else
@@ -112,7 +112,7 @@ lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
     TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
     SetVehicleDoorsLocked(veh, 2)
     local player = exports.qbx_core:GetPlayer(source)
-    exports.qbx_core:Notify(source, (locale(player and not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') and 'error.not_enough' or 'info.deposit_paid'):format(sharedConfig.truckPrice)), 'error')
+    exports.qbx_core:Notify(source, locale(player and not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') and 'error.not_enough' or 'info.deposit_paid', sharedConfig.truckPrice), 'error')
 
     return netId
 end)
@@ -125,7 +125,7 @@ RegisterNetEvent('garbagejob:server:payShift', function(continue)
         local depositPay = routes[citizenId].depositPay
         if tonumber(routes[citizenId].stopsCompleted) < tonumber(routes[citizenId].totalNumberOfStops) then
             depositPay = 0
-            exports.qbx_core:Notify(src, (locale('error.early_finish'):format(routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops)), 'error')
+            exports.qbx_core:Notify(src, locale('error.early_finish', routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops), 'error')
         end
         if continue then
             depositPay = 0
@@ -137,7 +137,7 @@ RegisterNetEvent('garbagejob:server:payShift', function(continue)
         end
 
         player.Functions.AddMoney('bank', totalToPay , 'garbage-payslip')
-        exports.qbx_core:Notify(src, (locale('success.pay_slip'):format(totalToPay, payoutDeposit)), 'success')
+        exports.qbx_core:Notify(src, locale('success.pay_slip', totalToPay, payoutDeposit), 'success')
         routes[citizenId] = nil
     else
         exports.qbx_core:Notify(source, locale('error.never_clocked_on'), 'error')
@@ -162,6 +162,6 @@ lib.addCommand('cleargarbroutes', {
         end
     end
 
-    exports.qbx_core:Notify(source, (locale('success.clear_routes'):format(count)), 'success')
+    exports.qbx_core:Notify(source, locale('success.clear_routes', count), 'success')
     routes[citizenId] = nil
 end)
