@@ -159,9 +159,9 @@ local function DeliverAnim()
             -- You haven't delivered all bags here
             amountOfBags = amountOfBags - 1
             if amountOfBags > 1 then
-                exports.qbx_core:Notify((locale('info.bags_left'):format(amountOfBags)))
+                exports.qbx_core:Notify(locale('info.bags_left', amountOfBags))
             else
-                exports.qbx_core:Notify((locale('info.bags_still'):format(amountOfBags)))
+                exports.qbx_core:Notify(locale('info.bags_still', amountOfBags))
             end
             garbageBinZone = exports.ox_target:addSphereZone({
                 coords = vec3(CL.coords.x, CL.coords.y, CL.coords.z),
@@ -316,9 +316,9 @@ local function runWorkLoop()
                                 -- You haven't delivered all bags here
                                 amountOfBags = amountOfBags - 1
                                 if amountOfBags > 1 then
-                                    exports.qbx_core:Notify((locale('info.bags_left'):format(amountOfBags)))
+                                    exports.qbx_core:Notify(locale('info.bags_left', amountOfBags))
                                 else
-                                    exports.qbx_core:Notify((locale('info.bags_still'):format(amountOfBags)))
+                                    exports.qbx_core:Notify(locale('info.bags_still', amountOfBags))
                                 end
                                 hasBag = false
                             end
@@ -414,7 +414,7 @@ local function spawnPeds()
         local current = config.peds[i]
         current.model = type(current.model) == 'string' and joaat(current.model) or current.model
 
-        lib.requestModel(current.model, 5000)
+        lib.requestModel(current.model, 20000)
         local ped = CreatePed(0, current.model, current.coords.x, current.coords.y, current.coords.z, current.coords.w, false, false)
         SetModelAsNoLongerNeeded(current.model)
         FreezeEntityPosition(ped, true)
@@ -516,7 +516,7 @@ AddEventHandler('qb-garbagejob:client:RequestRoute', function()
         amountOfBags = totalBags
         SetGarbageRoute()
     else
-        exports.qbx_core:Notify((locale('info.not_enough'):format(sharedConfig.truckPrice)))
+        exports.qbx_core:Notify(locale('info.not_enough', sharedConfig.truckPrice))
     end
 end)
 
