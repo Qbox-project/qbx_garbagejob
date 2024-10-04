@@ -1,0 +1,54 @@
+{
+  "error": {
+    "cancel": "Anulowano",
+    "no_truck": "Nie masz śmieciarki!",
+    "not_enough": "Nie masz wystarczającej ilości pieniędzy (%s required)",
+    "too_far": "Jesteś za daleko od punktu Zrzutu!",
+    "early_finish": "W związku z przedwczesnym zakończeniem (Ukończono: %s Łącznie: %s), twój depozyt nie zostanie zwrócony.",
+    "never_clocked_on": "Nie wszedłeś na Służbę!",
+    "all_occupied": "Wszystkie miejsca parkingowe są zajęte!"
+  },
+  "success": {
+    "clear_routes": "Wyczyszczono trasy użytkowników, posiadali %s zapisanych tras",
+    "pay_slip": "Otrzymałeś $%s, twoja wypłata %s została wpłacona na twoje konto Bankowe!"
+  },
+  "target": {
+    "talk": "Porozmawiaj ze Śmieciarzem",
+    "grab_garbage": "Weź Śmieci",
+    "dispose_garbage": "Wyrzuć Śmieci"
+  },
+  "menu": {
+    "header": "Menu Śmieciarza",
+    "collect": "Odbierz Wypłatę",
+    "return_collect": "Zwróc śmieciarkę i odbierz wypłatę tutaj!",
+    "route": "Wyznacz Trasę",
+    "request_route": "Wyznacz Trasę Śmieciarki"
+  },
+  "info": {
+    "payslip_collect": "[E] - Odbierz Wypłatę",
+    "payslip": "Wypłata",
+    "not_enough": "Nie masz wystraczająco pieniędzy do Depozytu.. Koszt depozytu wynosi $%s",
+    "deposit_paid": "Zapłaciłeś $%s depozytu!",
+    "no_deposit": "Brak depozytu na tym Pojeździe..",
+    "truck_returned": "Zwrócono Śmieciarkę, odbierz wypłatę aby otrzymać Depozyt!",
+    "bags_left": "Zostało %s worków!",
+    "bags_still": "There is still %s bag over there!",
+    "all_bags": "Wyrzucono wszystkie Śmieci, jedź do następnej Lokacji!",
+    "depot_issue": "Wystąpił błąd w Bazie, wracaj natyczmiast!",
+    "done_working": "Zakończyłeś Pracę! Wracaj do Bazy.",
+    "started": "Rozpocząłeś Pracę, zaznaczono lokację na GPS'ie!",
+    "grab_garbage": "[E] Weź Śmieci",
+    "stand_grab_garbage": "Stań tutaj aby zabrać Śmieci.",
+    "dispose_garbage": "[E] Wyrzuć Śmieci",
+    "progressbar": "Wkładanie worka do Śmieciarki ..",
+    "garbage_in_truck": "Wrzuć worek do Śmieciarki..",
+    "stand_here": "Stań Tutaj..",
+    "found_crypto": "Znazałeś cryptostick na Podłodze",
+    "payout_deposit": "(+ $%s depozyt)",
+    "store_truck": "[E] - Zwróć Śmieciarkę",
+    "get_truck": "[E] - Śmieciarka",
+    "picking_bag": "Podnoszenie Śmieci..",
+    "talk": "[E] Porozmawiaj ze Śmieciarzem",
+    "stops_left": "Pozostało %s punktów Kontrolnych!"
+  }
+}
