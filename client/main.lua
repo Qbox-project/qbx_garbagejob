@@ -483,20 +483,9 @@ AddEventHandler('qb-garbagejob:client:RequestRoute', function()
                 if not IsAnyVehicleNearPoint(v.x,v.y,v.z, 2.5) then
                     local netId = lib.callback.await('garbagejob:server:spawnVehicle', false, v)
 
-                    local veh = lib.waitFor(function()
-                        if NetworkDoesEntityExistWithNetworkId(netId) then
-                            return NetToVeh(netId)
-                        end
-                    end, 'Failed to spawn truck', 3000)
-
-                    if veh == 0 then
-                        lib.notify({ description = 'Failed to spawn truck', type = 'error' })
-                        return
-                    end
-
-                    garbageVehicle = veh
-                    SetVehicleFuelLevel(veh, 100.0)
-                    SetVehicleFixed(veh)
+                    garbageVehicle = NetToVeh(netId)
+                    SetVehicleFuelLevel(garbageVehicle, 100.0)
+                    SetVehicleFixed(garbageVehicle)
                     currentStop = firstStop
                     currentStopNum = 1
                     amountOfBags = totalBags
