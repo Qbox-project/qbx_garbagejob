@@ -1,55 +1,54 @@
 {
-    "error": {
-        "cancled": "İptal edildi",
-        "no_truck": "Kamyonun yok!",
-        "not_enough": "Yeterli Paran Yok (%s gerekli)",
-        "too_far": "Bırakma noktasından çok uzaktasın",
-        "early_finish": "Erken bitirme nedeniyle (Tamamlandı: %s Toplam: %s), depozitonuz iade edilmeyecektir.",
-        "never_clocked_on": "Hiç mesaiye başlamadın!",
-        "all_occupied": "Tüm park yerleri dolu"
-    },
-    "success": {
-        "clear_routes": "Kullanıcıların kayıtlı %s rotalası temizlendi",
-        "pay_slip": "$%s aldınız, maaş bordronuz %s banka hesabınıza ödendi!"
-    },
-    "target": {
-        "talk": "Çöpçü ile konuş",
-        "grab_garbage": "Çöp torbası al",
-        "dispose_garbage": "Çöp Torbasını At"
-    },
-    "menu": {
-        "header": "Çöpcü Ana Menü",
-        "collect": "Maaşını Al",
-        "return_collect": "Kamyonu iade edin ve maaş çekini buradan alın!",
-        "route": "Rota Talep Et",
-        "request_route": "Bir çöp rotası isteyin"
-    },
-    "info": {
-        "payslip_collect": "[E] - Maaş bordrosu",
-        "payslip": "Maaş bordrosu",
-        "not_enough": "Depozito için yeterli paranız yok. Depozito maliyeti $%s",
-        "deposit_paid": "$%s tutarında depozito ödediniz!",
-        "no_deposit": "Bu araç için ödemiş olduğunuz depozito yok..",
-        "truck_returned": "Kamyon iade edildi, depozitonuzu ve ödemenizi almak için maaş bordronuzu alın!",
-        "bags_left": "Hala %s torba kaldı!",
-        "bags_still": "Orada hala %s torba var!",
-        "all_bags": "Tüm çöp torbaları bitti, bir sonraki konuma geçin!",
-        "depot_issue": "Depoda bir sorun oluştu, lütfen hemen geri dönün!",
-        "done_working": "Çalışmanız bitti! Depoya geri dön.",
-        "started": "Çalışmaya başladınız, konum GPS'te işaretlendi!",
-        "grab_garbage": "[E] Çöp torbası al",
-        "stand_grab_garbage": "Çöp torbası almak için burada durun.",
-        "dispose_garbage": "[E] Çöp Torbasını Atın",
-        "progressbar": "Torba çöp arabasına koyuluyor ..",
-        "garbage_in_truck": "Torbayı çöp arabasına koy..",
-        "stand_here": "Burada dur..",
-        "found_crypto": "Yerde bir kripto çubuğu buldun",
-        "payout_deposit": "(+ $%s depozito)",
-        "store_truck": "[E] - Çöp Kamyonunu Depola",
-        "get_truck": "[E] - Çöp Kamyonu",
-        "picking_bag": "Çöp Torbası alınıyor..",
-        "talk": "[E] Çöpçü ile konuş",
-        "stops_left": "You have %s stops left!"
-    },
-    "warning": {}
+  "error": {
+    "cancel": "İptal edildi",
+    "no_truck": "Kamyonun yok!",
+    "not_enough": "Yeterli paran yok (%s gerekli)",
+    "too_far": "Teslim noktasından çok uzaktasın",
+    "early_finish": "Erken bitiş nedeniyle (Tamamlanan: %s, Toplam: %s), depoziton iade edilmeyecek.",
+    "never_clocked_on": "Hiç mesaiye girmedin!",
+    "all_occupied": "Tüm park yerleri dolu"
+  },
+  "success": {
+    "clear_routes": "Kullanıcıların sakladığı %s rota temizlendi",
+    "pay_slip": "$%s kazandın, maaş bordron %s banka hesabına yatırıldı!"
+  },
+  "target": {
+    "talk": "Çöpçü ile konuş",
+    "grab_garbage": "Çöp torbası al",
+    "dispose_garbage": "Çöp torbasını at"
+  },
+  "menu": {
+    "header": "Çöp Ana Menüsü",
+    "collect": "Maaşını Al",
+    "return_collect": "Kamyonu iade et ve maaşını buradan al!",
+    "route": "Rota İste",
+    "request_route": "Çöp rotası iste"
+  },
+  "info": {
+    "payslip_collect": "[E] - Maaş Bordrosu",
+    "payslip": "Maaş Bordrosu",
+    "not_enough": "Depozito için yeterli paran yok.. Depozito maliyeti $%s",
+    "deposit_paid": "$%s depozito ödedin!",
+    "no_deposit": "Bu araca ödenmiş bir depoziton yok..",
+    "truck_returned": "Kamyon iade edildi, maaş bordronu alarak ücretini ve depozitonu geri al!",
+    "bags_left": "Hâlâ %s torba kaldı!",
+    "bags_still": "Orada hâlâ %s torba var!",
+    "all_bags": "Tüm çöp torbaları toplandı, sonraki konuma geç!",
+    "depot_issue": "Depoda bir sorun oluştu, lütfen hemen geri dön!",
+    "done_working": "İşin bitti! Depoya geri dön.",
+    "started": "Çalışmaya başladın, konum GPS'te işaretlendi!",
+    "grab_garbage": "[E] - Çöp torbası al",
+    "stand_grab_garbage": "Çöp torbası almak için burada dur.",
+    "dispose_garbage": "[E] - Çöp torbasını at",
+    "progressbar": "Torbayı çöp toplayıcıya yerleştiriyor...",
+    "garbage_in_truck": "Torbayı kamyonuna yerleştir...",
+    "stand_here": "Burada dur...",
+    "found_crypto": "Yerde bir kripto çubuğu buldun",
+    "payout_deposit": "(+ $%s depozito)",
+    "store_truck": "[E] - Çöp Kamyonunu Depola",
+    "get_truck": "[E] - Çöp Kamyonu",
+    "picking_bag": "Çöp torbası alınıyor...",
+    "talk": "[E] - Çöpçü ile konuş",
+    "stops_left": "Kalan %s durak var!"
+  }
 }
