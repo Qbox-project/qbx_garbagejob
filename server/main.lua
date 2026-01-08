@@ -130,7 +130,7 @@ RegisterNetEvent('garbagejob:server:payShift', function(continue)
         if continue then
             depositPay = 0
         end
-        local totalToPay = depositPay + routes[citizenId].actualPay
+        local totalToPay<const> = (depositPay + routes[citizenId].actualPay) * exports.lenix_jobcenter:GetPlayerDifficultyMultiplier(citizenId, 'garbage')
         local payoutDeposit = locale('info.payout_deposit', depositPay)
         if depositPay == 0 then
             payoutDeposit = ''
@@ -142,6 +142,24 @@ RegisterNetEvent('garbagejob:server:payShift', function(continue)
     else
         exports.qbx_core:Notify(source, locale('error.never_clocked_on'), 'error')
     end
+end)
+
+
+RegisterNetEvent('qbx_garbagejob:server:givePlayerReward', function()
+    local playerData<const> = exports.qbx_core:GetPlayer(source).PlayerData
+    local playerLevel<const> = exports.lenix_jobcenter:GetPlayerLevel(playerData.citizenid, 'garbage')
+    local itemIndex<const> = math.random(1, 2)
+    local items<const> = config.rewardItems
+    if playerLevel >= 20 and playerLevel < 30 then
+        exports.ox_inventory:AddItem(source, items[itemIndex], math.random(1, 2))
+    else
+        if playerLevel >= 30 and playerLevel < 40 then
+            exports.ox_inventory:AddItem(source, items[itemIndex], math.random(2, 3))
+        else
+            exports.ox_inventory:AddItem(source, items[itemIndex], math.random(3, 5))
+        end
+    end
+    exports.lenix_jobcenter:GivePlayerRep(source, playerData.citizenid, 'garbage', 'lowend')
 end)
 
 lib.addCommand('cleargarbroutes', {

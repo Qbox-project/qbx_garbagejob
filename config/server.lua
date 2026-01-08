@@ -7,5 +7,6 @@ return {
     bagUpperWorth = 100,
     bagLowerWorth = 50,
     minBagsPerStop = 2,
-    maxBagsPerStop = 5
+    maxBagsPerStop = 5,
+    rewardItems = {'rubber', 'plastic'}
 }

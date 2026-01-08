@@ -142,6 +142,7 @@ local function DeliverAnim()
                 SetGarbageRoute()
                 exports.qbx_core:Notify(locale('info.all_bags'))
                 SetVehicleDoorShut(garbageVehicle, 5, false)
+                TriggerServerEvent('qbx_garbagejob:server:givePlayerReward')
             else
                 if hasMoreStops and nextStop == currentStop then
                     exports.qbx_core:Notify(locale('info.depot_issue'))

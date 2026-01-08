@@ -3,7 +3,7 @@ game 'gta5'
 
 description 'QBX_GarbageJob'
 repository 'https://github.com/Qbox-project/qbx_garbagejob'
-version '1.0.0'
+version '1.1.0'
 
 ox_lib 'locale'
 
