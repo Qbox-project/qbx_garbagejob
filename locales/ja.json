@@ -1,0 +1,54 @@
+{
+    "error": {
+        "cancel": "キャンセルされました",
+        "no_truck": "トラックがありません！",
+        "not_enough": "お金が足りません (%s 必要)",
+        "too_far": "搬入ポイントから離れすぎています",
+        "early_finish": "早期終了のため（完了: %s 合計: %s）、デポジットは返金されません。",
+        "never_clocked_on": "出勤していませんでした！",
+        "all_occupied": "全ての駐車スペースが占有されています"
+    },
+    "success": {
+        "clear_routes": "ユーザーのルートをクリアしました。%s 件のルートが保存されていました",
+        "pay_slip": "$%s を獲得しました。給与明細 %s が銀行口座に振り込まれました！"
+    },
+    "target": {
+        "talk": "清掃員に話しかける",
+        "grab_garbage": "ゴミ袋を掴む",
+        "dispose_garbage": "ゴミ袋を廃棄する"
+    },
+    "menu": {
+        "header": "清掃員メインメニュー",
+        "collect": "給与を受け取る",
+        "return_collect": "トラックを返却して給与をここで受け取る！",
+        "route": "ルートを依頼",
+        "request_route": "清掃ルートを依頼"
+    },
+    "info": {
+        "payslip_collect": "[E] - 給与明細",
+        "payslip": "給与明細",
+        "not_enough": "デポジットに必要なお金が足りません。デポジット料金は $%s です",
+        "deposit_paid": "$%s のデポジットを支払いました！",
+        "no_deposit": "この車両のデポジットは支払われていません。",
+        "truck_returned": "トラックを返却しました。給与明細を受け取って報酬とデポジットを回収してください！",
+        "bags_left": "まだ %s 個の袋が残っています！",
+        "bags_still": "まだ %s 個の袋があそこに残っています！",
+        "all_bags": "全てのゴミ袋の回収が完了しました。次の場所へ進んでください！",
+        "depot_issue": "デポで問題が発生しました。すぐに戻ってください！",
+        "done_working": "作業完了！デポに戻ってください。",
+        "started": "作業を開始しました。GPSに場所が表示されました！",
+        "grab_garbage": "[E] ゴミ袋を掴む",
+        "stand_grab_garbage": "ここに立ってゴミ袋を掴んでください。",
+        "dispose_garbage": "[E] ゴミ袋を廃棄する",
+        "progressbar": "袋をトラッシュマスターに入れています..",
+        "garbage_in_truck": "袋をトラックに入れてください..",
+        "stand_here": "ここに立ってください..",
+        "found_crypto": "地面でクリプトスティックを見つけました",
+        "payout_deposit": "(+ $%s デポジット)",
+        "store_truck": "[E] - ゴミ収集車を格納",
+        "get_truck": "[E] - ゴミ収集車を取り出す",
+        "picking_bag": "ゴミ袋を掴んでいます..",
+        "talk": "[E] 清掃員に話しかける",
+        "stops_left": "あと %s ヶ所残っています！"
+    }
+}
