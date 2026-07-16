@@ -1,147 +1,230 @@
 local config = require 'config.server'
 local sharedConfig = require 'config.shared'
 local routes = {}
+local activeTrucks = {}
+local vehicleSpawns = {}
+local MINIMUM_TIME_PER_BAG = 4000
 
+---@param player table
+---@return boolean
+local function isGarbageWorker(player)
+    return player.PlayerData.job and player.PlayerData.job.name == 'garbage'
+end
+
+---@param source number
+---@param coords vector3
+---@param maxDistance number
+---@return boolean
+local function isNear(source, coords, maxDistance)
+    local ped = GetPlayerPed(source)
+    return ped > 0 and #(GetEntityCoords(ped) - coords) <= maxDistance
+end
+
+---@param player table
+---@return boolean
 local function canPay(player)
     return player.PlayerData.money.bank >= sharedConfig.truckPrice
 end
 
-lib.callback.register('garbagejob:server:newShift', function(source, continue)
+---@param citizenId string
+---@return table?
+local function getActiveTruck(citizenId)
+    local truck = activeTrucks[citizenId]
+    if truck and DoesEntityExist(truck.entity) then return truck end
+end
+
+---@param route table
+---@return integer
+local function calculateStopPay(route)
+    local total = 0
+    local bags = route.stops[route.currentStop].bags
+    for _ = 1, bags do
+        total += math.random(config.bagLowerWorth, config.bagUpperWorth)
+    end
+    return total
+end
+
+lib.callback.register('garbagejob:server:newShift', function(source)
     local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
+    if not player or not isGarbageWorker(player) then return false end
+    if not isNear(source, sharedConfig.locations.paycheck.coords, 5.0) then return false end
 
     local citizenId = player.PlayerData.citizenid
-    local shouldContinue = false
-    local nextStop = 0
-    local totalNumberOfStops = 0
-    local bagNum = 0
-
-    if canPay(player) or continue then
-        local maxStops = math.random(config.minStops, #sharedConfig.locations.trashcan)
-        local allStops = {}
-
-        for _ = 1, maxStops do
-            local stop = math.random(#sharedConfig.locations.trashcan)
-            local newBagAmount = math.random(config.minBagsPerStop, config.maxBagsPerStop)
-            allStops[#allStops + 1] = {stop = stop, bags = newBagAmount}
-        end
-
-        routes[citizenId] = {
-            stops = allStops,
-            currentStop = 1,
-            started = true,
-            currentDistance = 0,
-            depositPay = sharedConfig.truckPrice,
-            actualPay = 0,
-            stopsCompleted = 0,
-            totalNumberOfStops = #allStops
-        }
-
-        nextStop = allStops[1].stop
-        shouldContinue = true
-        totalNumberOfStops = #allStops
-        bagNum = allStops[1].bags
-
-        -- Notify the player about the total number of stops left.
-        exports.qbx_core:Notify(source, locale('info.stops_left', totalNumberOfStops), 'info')
-    else
-        exports.qbx_core:Notify(source, locale('error.not_enough', sharedConfig.truckPrice), 'error')
+    local route = routes[citizenId]
+    local truck = getActiveTruck(citizenId)
+    if activeTrucks[citizenId] and not truck then
+        activeTrucks[citizenId] = nil
     end
 
-    return shouldContinue, nextStop, bagNum, totalNumberOfStops
+    if route then
+        if truck then return false end
+        local current = route.stops[route.currentStop]
+        return true, current.stop, current.bags, #route.stops
+    end
+
+    if not truck and not canPay(player) then
+        exports.qbx_core:Notify(source, locale('error.not_enough', sharedConfig.truckPrice), 'error')
+        return false
+    end
+
+    local maxStops = math.random(config.minStops, #sharedConfig.locations.trashcan)
+    local allStops = {}
+    for _ = 1, maxStops do
+        allStops[#allStops + 1] = {
+            stop = math.random(#sharedConfig.locations.trashcan),
+            bags = math.random(config.minBagsPerStop, config.maxBagsPerStop),
+        }
+    end
+
+    routes[citizenId] = {
+        stops = allStops,
+        currentStop = 1,
+        actualPay = 0,
+        stopsCompleted = 0,
+        totalNumberOfStops = #allStops,
+        availableAt = GetGameTimer() + allStops[1].bags * MINIMUM_TIME_PER_BAG,
+    }
+
+    exports.qbx_core:Notify(source, locale('info.stops_left', #allStops), 'info')
+    return true, allStops[1].stop, allStops[1].bags, #allStops
 end)
 
-lib.callback.register('garbagejob:server:nextStop', function(source, currentStop, currentStopNum, currLocation)
+lib.callback.register('garbagejob:server:nextStop', function(source)
     local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
+    if not player or not isGarbageWorker(player) then return false, 0, 0 end
 
     local citizenId = player.PlayerData.citizenid
-    local currStopCoords = sharedConfig.locations.trashcan[currentStop].coords
-    local distance = #(currLocation - currStopCoords.xyz)
-    local newStop = 0
-    local shouldContinue = false
-    local newBagAmount = 0
+    local route = routes[citizenId]
+    local truck = getActiveTruck(citizenId)
+    if not route or not truck or route.completed then return false, 0, 0 end
+    if GetGameTimer() < route.availableAt then return false, 0, 0 end
+
+    local current = route.stops[route.currentStop]
+    local stopCoords = sharedConfig.locations.trashcan[current.stop].coords.xyz
+    if not isNear(source, stopCoords, 20.0) then
+        exports.qbx_core:Notify(source, locale('error.too_far'), 'error')
+        return false, 0, 0
+    end
+    if #(GetEntityCoords(truck.entity) - stopCoords) > 30.0 then
+        exports.qbx_core:Notify(source, locale('error.no_truck'), 'error')
+        return false, 0, 0
+    end
+
+    route.actualPay = math.ceil(route.actualPay + calculateStopPay(route))
+    route.stopsCompleted += 1
 
     if config.giveItemReward and math.random(100) >= config.itemRewardChance then
         player.Functions.AddItem(config.itemRewardName, 1, false)
         exports.qbx_core:Notify(source, locale('info.found_crypto'))
     end
 
-    if distance <= 20 then
-        if currentStopNum >= #routes[citizenId].stops then
-            routes[citizenId].stopsCompleted = tonumber(routes[citizenId].stopsCompleted) + 1
-            newStop = currentStop
-        else
-            newStop = routes[citizenId].stops[currentStopNum+1].stop
-            newBagAmount = routes[citizenId].stops[currentStopNum+1].bags
-            shouldContinue = true
-            local bagAmount = routes[citizenId].stops[currentStopNum].bags
-            local totalNewPay = 0
-
-            for _ = 1, bagAmount do
-                totalNewPay += math.random(config.bagLowerWorth, config.bagUpperWorth)
-            end
-
-            routes[citizenId].actualPay = math.ceil(routes[citizenId].actualPay + totalNewPay)
-            routes[citizenId].stopsCompleted = tonumber(routes[citizenId].stopsCompleted) + 1
-
-            -- Notify the player about the number of stops left
-            local stopsLeft = #routes[citizenId].stops - routes[citizenId].stopsCompleted
-            exports.qbx_core:Notify(source, locale('info.stops_left', stopsLeft), 'info')
-
-        end
-    else
-        exports.qbx_core:Notify(source, locale('error.too_far'), 'error')
+    if route.currentStop >= #route.stops then
+        route.completed = true
+        return false, current.stop, 0
     end
 
-    return shouldContinue, newStop, newBagAmount
+    route.currentStop += 1
+    local nextStop = route.stops[route.currentStop]
+    route.availableAt = GetGameTimer() + nextStop.bags * MINIMUM_TIME_PER_BAG
+    exports.qbx_core:Notify(source, locale('info.stops_left', #route.stops - route.stopsCompleted), 'info')
+    return true, nextStop.stop, nextStop.bags
 end)
 
-lib.callback.register('garbagejob:server:endShift', function(source)
+---@param spawnIndex any
+---@return vector4?
+local function getSpawnPoint(spawnIndex)
+    if type(spawnIndex) ~= 'number' or spawnIndex % 1 ~= 0 then return end
+    return sharedConfig.locations.vehicle.coords[spawnIndex]
+end
+
+lib.callback.register('garbagejob:server:spawnVehicle', function(source, spawnIndex)
     local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
+    if not player or not isGarbageWorker(player) then return end
+    if not isNear(source, sharedConfig.locations.paycheck.coords, 5.0) then return end
 
     local citizenId = player.PlayerData.citizenid
-    return routes[citizenId]
-end)
+    if not routes[citizenId] or getActiveTruck(citizenId) or vehicleSpawns[citizenId] then return end
 
-lib.callback.register('garbagejob:server:spawnVehicle', function(source, coords)
-    local netId, veh = qbx.spawnVehicle({ spawnSource = coords, model = joaat(config.vehicle), warp = GetPlayerPed(source) })
+    local spawnCoords = getSpawnPoint(spawnIndex)
+    if not spawnCoords then return end
+    if lib.getClosestVehicle(spawnCoords.xyz, 2.5, false) then return end
+
+    vehicleSpawns[citizenId] = true
+    if not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') then
+        vehicleSpawns[citizenId] = nil
+        exports.qbx_core:Notify(source, locale('error.not_enough', sharedConfig.truckPrice), 'error')
+        return
+    end
+
+    local success, netId, vehicle = pcall(qbx.spawnVehicle, {
+        spawnSource = spawnCoords,
+        model = joaat(config.vehicle),
+        warp = GetPlayerPed(source),
+    })
+    vehicleSpawns[citizenId] = nil
+
+    if not success or not netId or not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then
+        player.Functions.AddMoney('bank', sharedConfig.truckPrice, 'garbage-deposit-refund')
+        return
+    end
+
     local plate = 'GBGE' .. tostring(math.random(1000, 9999))
-    SetVehicleNumberPlateText(veh, plate)
-    exports.qbx_vehiclekeys:GiveKeys(source, veh)
-    SetVehicleDoorsLocked(veh, 2)
-    local player = exports.qbx_core:GetPlayer(source)
-    exports.qbx_core:Notify(source, locale(player and not player.Functions.RemoveMoney('bank', sharedConfig.truckPrice, 'garbage-deposit') and 'error.not_enough' or 'info.deposit_paid', sharedConfig.truckPrice), 'error')
+    SetVehicleNumberPlateText(vehicle, plate)
+    exports.qbx_vehiclekeys:GiveKeys(source, vehicle)
+    SetVehicleDoorsLocked(vehicle, 2)
+    activeTrucks[citizenId] = {
+        entity = vehicle,
+        netId = netId,
+        deposit = sharedConfig.truckPrice,
+    }
 
+    exports.qbx_core:Notify(source, locale('info.deposit_paid', sharedConfig.truckPrice), 'info')
     return netId
 end)
 
-RegisterNetEvent('garbagejob:server:payShift', function(continue)
-    local src = source
-    local player = exports.qbx_core:GetPlayer(src)
-    local citizenId = player.PlayerData.citizenid
-    if routes[citizenId] then
-        local depositPay = routes[citizenId].depositPay
-        if tonumber(routes[citizenId].stopsCompleted) < tonumber(routes[citizenId].totalNumberOfStops) then
-            depositPay = 0
-            exports.qbx_core:Notify(src, locale('error.early_finish', routes[citizenId].stopsCompleted, routes[citizenId].totalNumberOfStops), 'error')
-        end
-        if continue then
-            depositPay = 0
-        end
-        local totalToPay = depositPay + routes[citizenId].actualPay
-        local payoutDeposit = locale('info.payout_deposit', depositPay)
-        if depositPay == 0 then
-            payoutDeposit = ''
-        end
+lib.callback.register('garbagejob:server:payShift', function(source, continue)
+    local player = exports.qbx_core:GetPlayer(source)
+    if not player or not isGarbageWorker(player) then return false end
+    if type(continue) ~= 'boolean' then return false end
+    if not isNear(source, sharedConfig.locations.paycheck.coords, 5.0) then return false end
 
-        player.Functions.AddMoney('bank', totalToPay , 'garbage-payslip')
-        exports.qbx_core:Notify(src, locale('success.pay_slip', totalToPay, payoutDeposit), 'success')
-        routes[citizenId] = nil
-    else
+    local citizenId = player.PlayerData.citizenid
+    local route = routes[citizenId]
+    local truck = getActiveTruck(citizenId)
+    if not route or not truck then
         exports.qbx_core:Notify(source, locale('error.never_clocked_on'), 'error')
+        return false
     end
+    if #(GetEntityCoords(truck.entity) - sharedConfig.locations.main.coords) > 40.0 then
+        exports.qbx_core:Notify(source, locale('error.no_truck'), 'error')
+        return false
+    end
+    if continue and not route.completed then return false end
+
+    local depositPay = 0
+    if route.completed and not continue then
+        depositPay = truck.deposit
+    elseif not route.completed then
+        exports.qbx_core:Notify(
+            source,
+            locale('error.early_finish', route.stopsCompleted, route.totalNumberOfStops),
+            'error'
+        )
+    end
+
+    local totalToPay = depositPay + route.actualPay
+    local payoutDeposit = depositPay > 0 and locale('info.payout_deposit', depositPay) or ''
+    player.Functions.AddMoney('bank', totalToPay, 'garbage-payslip')
+    exports.qbx_core:Notify(source, locale('success.pay_slip', totalToPay, payoutDeposit), 'success')
+    routes[citizenId] = nil
+
+    if not continue then
+        activeTrucks[citizenId] = nil
+        if not route.completed and DoesEntityExist(truck.entity) then
+            DeleteEntity(truck.entity)
+        end
+    end
+    return true
 end)
 
 lib.addCommand('cleargarbroutes', {
@@ -150,18 +233,12 @@ lib.addCommand('cleargarbroutes', {
         { name = 'id', help = 'Player ID', type = 'playerId' }
     },
     restricted = 'group.admin'
-},  function(source, args)
+}, function(source, args)
     local player = exports.qbx_core:GetPlayer(args.id)
     if not player then return end
 
     local citizenId = player.PlayerData.citizenid
-    local count = 0
-    for k in pairs(routes) do
-        if k == citizenId then
-            count += 1
-        end
-    end
-
-    exports.qbx_core:Notify(source, locale('success.clear_routes', count), 'success')
+    local count = routes[citizenId] and 1 or 0
     routes[citizenId] = nil
+    exports.qbx_core:Notify(source, locale('success.clear_routes', count), 'success')
 end)
