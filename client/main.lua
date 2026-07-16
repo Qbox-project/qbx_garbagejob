@@ -10,11 +10,9 @@ local garbageObject
 local endBlip
 local garbageBlip
 local canTakeBag = true
-local currentStopNum = 0
 local pZone
 local garbageBinZone
 local finished = false
-local continueWorking = false
 local garbText = false
 local trucText = false
 local pedsSpawned = false
@@ -27,7 +25,6 @@ local function setupClient()
     amountOfBags = 0
     garbageObject = nil
     endBlip = nil
-    currentStopNum = 0
     if playerJob.name == 'garbage' then
         garbageBlip = AddBlipForCoord(sharedConfig.locations.main.coords.x, sharedConfig.locations.main.coords.y, sharedConfig.locations.main.coords.z)
         SetBlipSprite(garbageBlip, 318)
@@ -79,7 +76,6 @@ local function BringBackCar()
     amountOfBags = 0
     garbageObject = nil
     endBlip = nil
-    currentStopNum = 0
 end
 
 local function DeleteZone()
@@ -130,14 +126,12 @@ local function DeliverAnim()
     if config.useTarget and hasBag then
         local CL = sharedConfig.locations.trashcan[currentStop]
         hasBag = false
-        local pos = GetEntityCoords(cache.ped)
         exports.ox_target:removeEntity(NetworkGetNetworkIdFromEntity(garbageVehicle), 'garbage_deliver')
         if (amountOfBags - 1) <= 0 then
-            local hasMoreStops, nextStop, newBagAmount = lib.callback.await('garbagejob:server:nextStop', false, currentStop, currentStopNum, pos)
+            local hasMoreStops, nextStop, newBagAmount = lib.callback.await('garbagejob:server:nextStop', false)
             if hasMoreStops and nextStop ~= 0 then
                 -- Here he puts your next location and you are not finished working yet.
                 currentStop = nextStop
-                currentStopNum = currentStopNum + 1
                 amountOfBags = newBagAmount
                 SetGarbageRoute()
                 exports.qbx_core:Notify(locale('info.all_bags'))
@@ -289,11 +283,10 @@ local function runWorkLoop()
                             -- Looks if you have delivered all bags
                             if (amountOfBags - 1) <= 0 then
                                 local hasMoreStops, nextStop, newBagAmount = lib.callback.await(
-                                'garbagejob:server:nextStop', false, currentStop, currentStopNum, pos)
+                                'garbagejob:server:nextStop', false)
                                 if hasMoreStops and nextStop ~= 0 then
                                     -- Here he puts your next location and you are not finished working yet.
                                     currentStop = nextStop
-                                    currentStopNum = currentStopNum + 1
                                     amountOfBags = newBagAmount
                                     SetGarbageRoute()
                                     exports.qbx_core:Notify(locale('info.all_bags'))
@@ -471,17 +464,18 @@ end
 
 AddEventHandler('qb-garbagejob:client:RequestRoute', function()
     if garbageVehicle then
-        continueWorking = true
-        TriggerServerEvent('garbagejob:server:payShift', continueWorking)
+        local paid = lib.callback.await('garbagejob:server:payShift', false, true)
+        if not paid then return end
     end
 
-    local shouldContinue, firstStop, totalBags = lib.callback.await('garbagejob:server:newShift', false, continueWorking)
+    local shouldContinue, firstStop, totalBags = lib.callback.await('garbagejob:server:newShift', false)
     if shouldContinue then
         if not garbageVehicle then
             local occupied = false
-            for _, v in pairs(sharedConfig.locations.vehicle.coords) do
+            for i, v in pairs(sharedConfig.locations.vehicle.coords) do
                 if not IsAnyVehicleNearPoint(v.x,v.y,v.z, 2.5) then
-                    local netId = lib.callback.await('garbagejob:server:spawnVehicle', false, v)
+                    local netId = lib.callback.await('garbagejob:server:spawnVehicle', false, i)
+                    if not netId then return end
 
                     local veh = lib.waitFor(function()
                         if NetworkDoesEntityExistWithNetworkId(netId) then
@@ -498,7 +492,6 @@ AddEventHandler('qb-garbagejob:client:RequestRoute', function()
                     SetVehicleFuelLevel(veh, 100.0)
                     SetVehicleFixed(veh)
                     currentStop = firstStop
-                    currentStopNum = 1
                     amountOfBags = totalBags
                     SetGarbageRoute()
                     exports.qbx_core:Notify(locale('info.started'))
@@ -512,7 +505,6 @@ AddEventHandler('qb-garbagejob:client:RequestRoute', function()
             end
         end
         currentStop = firstStop
-        currentStopNum = 1
         amountOfBags = totalBags
         SetGarbageRoute()
     else
@@ -521,11 +513,13 @@ AddEventHandler('qb-garbagejob:client:RequestRoute', function()
 end)
 
 AddEventHandler('qb-garbagejob:client:RequestPaycheck', function()
+    local paid = lib.callback.await('garbagejob:server:payShift', false, false)
+    if not paid then return end
+
     if garbageVehicle then
         BringBackCar()
         exports.qbx_core:Notify(locale('info.truck_returned'))
     end
-    TriggerServerEvent('garbagejob:server:payShift')
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
