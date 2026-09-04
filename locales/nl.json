@@ -1,6 +1,6 @@
 {
     "error": {
-        "cancled": "Geannuleerd",
+        "cancel": "Geannuleerd",
         "no_truck": "Je hebt geen vrachtwagen!",
         "not_enough": "Niet genoeg geld (%s vereist)",
         "too_far": "Je bent te ver weg van het inleverpunt",
@@ -50,6 +50,5 @@
         "picking_bag": "Vuilniszak oppakken..",
         "talk": "[E] Praat ment Vuilnisman",
         "stops_left": "You have %s stops left!"
-    },
-    "warning": {}
+    }
 }
