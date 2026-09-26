@@ -3,7 +3,7 @@ local sharedConfig = require 'config.shared'
 local routes = {}
 local activeTrucks = {}
 local vehicleSpawns = {}
-local MINIMUM_TIME_PER_BAG = 4000
+local MINIMUM_TIME_PER_BAG = 2500
 
 ---@param player table
 ---@return boolean
@@ -191,18 +191,18 @@ lib.callback.register('garbagejob:server:payShift', function(source, continue)
     local citizenId = player.PlayerData.citizenid
     local route = routes[citizenId]
     local truck = getActiveTruck(citizenId)
-    if not route or not truck then
+    if not route then
         exports.qbx_core:Notify(source, locale('error.never_clocked_on'), 'error')
         return false
     end
-    if #(GetEntityCoords(truck.entity) - sharedConfig.locations.main.coords) > 40.0 then
+    if truck and #(GetEntityCoords(truck.entity) - sharedConfig.locations.main.coords) > 40.0 then
         exports.qbx_core:Notify(source, locale('error.no_truck'), 'error')
         return false
     end
-    if continue and not route.completed then return false end
+    if continue and (not route.completed or not truck) then return false end
 
     local depositPay = 0
-    if route.completed and not continue then
+    if route.completed and not continue and truck then
         depositPay = truck.deposit
     elseif not route.completed then
         exports.qbx_core:Notify(
@@ -220,7 +220,7 @@ lib.callback.register('garbagejob:server:payShift', function(source, continue)
 
     if not continue then
         activeTrucks[citizenId] = nil
-        if not route.completed and DoesEntityExist(truck.entity) then
+        if truck and DoesEntityExist(truck.entity) then
             DeleteEntity(truck.entity)
         end
     end
